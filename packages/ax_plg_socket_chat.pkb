@@ -54,7 +54,9 @@
      v_region_id     p_region.static_id%type;
      v_exe_code      clob;
      v_config        clob;
+     v_url           clob;
      v_socket_server p_plugin.attribute_01%type := p_region.attribute_01;
+     v_chat_room_itm p_plugin.attribute_02%type := p_region.attribute_02;
     begin
         -- During plug-in development it's very helpful to have some debug information
         if apex_application.g_debug then
@@ -91,12 +93,28 @@
                     p_directory => p_plugin.file_prefix );
         end if;
 
+        v_url := 'f?p=' || v('APP_ID')      || ':' ||
+                           v('APP_PAGE_ID') || ':' ||
+                           v('APP_SESSION') ||'::' ||
+                           V('DEBUG')       ||'::'
+                           || v_chat_room_itm||':#roomid#';
+
+        v_url := apex_util.host_url(p_option => 'SCRIPT') ||
+                    apex_util.prepare_url(
+                      p_url => v_url
+                    );
+
         apex_json.initialize_clob_output;
         apex_json.open_object;
 
-        apex_json.write('socketServer', v_socket_server);
-        apex_json.write('apxRegionId', v_region_id);
-        apex_json.write('currentUser', apex_custom_auth.get_user);
+        apex_json.write('socketServer'   , v_socket_server          );
+        apex_json.write('apxRegionId'    , v_region_id              );
+        apex_json.write('currentUser'    , apex_custom_auth.get_user);
+        apex_json.write('apxChatRoomUrl' , v_url                    );
+
+        if v(v_chat_room_itm) is not null then
+          apex_json.write('room'           , v(v_chat_room_itm)     );
+        end if;
 
         apex_json.close_object;
         v_config := apex_json.stringify(apex_json.get_clob_output);
