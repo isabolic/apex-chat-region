@@ -11,6 +11,9 @@
   "dependencies": {
     "express": "^4.15.0",
     "http": "0.0.0",
-    "socket.io": "^1.7.3"
+    "mkdir": "0.0.2",
+    "mkdirp": "^0.5.1",
+    "socket.io": "^1.7.3",
+    "winston": "^2.3.1"
   }
 }
