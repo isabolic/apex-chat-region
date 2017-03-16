@@ -32,6 +32,7 @@
         apxChatRoomUrl  : null,
         apxRoomItemVal  : null,
         isPublic        : false,
+        ajaxIdentifier  : null,
         htmlTemplate    : {
                 chatRow :       "<div class='ch-row'>"                                                 +
                                     "<div class='ch-avatar'>#USERNAME#</div>"                          +
@@ -163,6 +164,37 @@
         }.bind(this));
     };
 
+    var setApxItemVal = function setApxItemVal(val){
+        var params;
+
+        xDebug.call(this, arguments.callee.name, arguments);
+
+        params = {
+            p_flow_id      : $('#pFlowId').val(),
+            p_flow_step_id : $('#pFlowStepId').val(),
+            p_instance     : $('#pInstance').val(),
+            p_debug        : $('#pdebug').val(),
+            x01            : val,
+            p_request      : 'PLUGIN=' + this.options.ajaxIdentifier
+        };
+
+        if ()
+
+        $.ajax({
+                type     : 'POST',
+                url      : 'wwv_flow.show',
+                data     : params,
+                dateType : 'application/json',
+                async    : true
+            }).done(function(data){
+                xDebug.call(this, arguments.callee.name, arguments);
+                x.debug('response : ' || data);
+              }.bind(this))
+               .fail(function(data) {
+                alert( "error : " || data );
+              }.bind(this));
+    }
+
     var setSocketEvents = function() {
         xDebug.call(this, arguments.callee.name, arguments);
 
@@ -173,6 +205,7 @@
                 this.options.room = room;
                 this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", room);
                 setInviteButton.call(this);
+                setApxItemVal.call(this, room);
             }
             console.log(this.options.apxChatRoomUrl);
         }.bind(this));
@@ -209,6 +242,7 @@
             this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", this.options.room);
             console.log(this.options.apxChatRoomUrl);
             setInviteButton.call(this);
+            setApxItemVal.call(this, this.options.room);
         }
     };
 

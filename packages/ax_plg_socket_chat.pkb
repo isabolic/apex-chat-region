@@ -107,10 +107,11 @@
         apex_json.initialize_clob_output;
         apex_json.open_object;
 
-        apex_json.write('socketServer'   , v_socket_server          );
-        apex_json.write('apxRegionId'    , v_region_id              );
-        apex_json.write('currentUser'    , apex_custom_auth.get_user);
-        apex_json.write('apxChatRoomUrl' , v_url                    );
+        apex_json.write('socketServer'   , v_socket_server                );
+        apex_json.write('apxRegionId'    , v_region_id                    );
+        apex_json.write('currentUser'    , apex_custom_auth.get_user      );
+        apex_json.write('apxChatRoomUrl' , v_url                          );
+        apex_json.write('ajaxIdentifier' , apex_plugin.get_ajax_identifier);
 
         if v(v_chat_room_itm) is not null then
           apex_json.write('room'           , v(v_chat_room_itm)     );
@@ -129,6 +130,35 @@
         return v_reg_rend_res;
 
     end chat_region_render;
+
+    function chat_region_ajax (
+      p_region              in apex_plugin.t_region,
+      p_plugin              in apex_plugin.t_plugin)
+    return apex_plugin.t_region_ajax_result
+    is
+       v_result        apex_plugin.t_region_ajax_result;
+       v_chat_room_itm p_plugin.attribute_02%type := p_region.attribute_02;
+       v_config        clob;
+       v_room          wwv_flow.g_x01%type := wwv_flow.g_x01;
+    begin
+        p_log(v_chat_room_itm);
+        p_log(v_room);
+        apex_util.set_session_state(v_chat_room_itm, v_room);
+
+        apex_json.initialize_clob_output;
+        apex_json.open_object;
+
+        apex_json.write('succesful'  , 'true');
+
+        apex_json.close_object;
+        v_config := apex_json.stringify(apex_json.get_clob_output);
+        apex_json.free_output;
+
+        res_out(v_config);
+
+        return v_result;
+
+    end chat_region_ajax;
 
 end ax_plg_socket_chat;
 
