@@ -1,97 +1,140 @@
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io')(server, { serveClient: false });
-var server_port = 5050;
-var server_ip_address = '192.168.70.104';
+/**
+ *
+ * Plugin : Apex chat
+ * Version: 1.0.0
+ *
+ * Author : isabolic99
+ * Mail   : sabolic.ivan@gmail.com
+ * Twitter: @isabolic99
+ */
 
-server.listen(server_port, server_ip_address, function () {
-  console.log( "Listening on " + server_ip_address + ", server_port " + server_port );
-});
+(function() {
+    const express = require('express');
+    const http = require('http');
+    const socketio = require('socket.io');
+    const winston = require('winston');
+    const mkdirp = require('mkdirp');
+
+    const server_port = 5050;
+    //const server_ip_address = '10.73.222.109';
+    const server_ip_address = 'playground';
 
 
-// usernames which are currently connected to the chat
-var usernames = {};
-var numUsers = 0;
-var bounds = {};
-
-io.on('connection', function (socket) {
-  var addedUser = false;
-  console.log("connected...");
+    var app       = express();
+    var server    = http.createServer(app);
+    var io        = socketio(server, { serveClient: false });
 
 
-  /**
-   ** @description - socket event for chat
-   **/
-  socket.on('new message', function (data) {
-    // we tell the client to execute 'new message'
-    console.log("message" + data);
-    socket.broadcast.emit('new message', {
-      username: socket.username,
-      message: data
-    });
-  });
-
-  /**
-   ** @description - socket event for new user
-   **/
-  socket.on('add user', function (username) {
-    // we store the username in the socket session for this client
-    socket.username = username;
-    // add the client's username to the global list
-    ++numUsers;
-    addedUser = true;
-
-    socket.emit('login', {
-      numUsers: numUsers,
-          allUsers:usernames
+    var wiLogger = new(winston.Logger)({
+        transports: [
+            new(winston.transports.File)({
+                name: 'info-file',
+                filename: 'logs/filelog-info.log',
+                level: 'info'
+            }),
+            new(winston.transports.File)({
+                name: 'error-file',
+                filename: 'logs/filelog-error.log',
+                level: 'error'
+            })
+        ]
     });
 
-    usernames[username] = username;
-
-    // echo globally (all clients) that a person has connected
-    socket.broadcast.emit('user joined', {
-      username: socket.username,
-      numUsers: numUsers
+    mkdirp("logs", function(err) {
+      if (err) {
+          wiLogger.log("info","err creating log folder " + err);
+      }
     });
 
-  });
-
-  /**
-   ** @description - socket event for typing
-   **/
-  socket.on('typing', function () {
-    socket.broadcast.emit('typing', {
-      username: socket.username
+    server.listen(server_port, server_ip_address, function () {
+      console.log( "Listening on " + server_ip_address + ", server_port " + server_port);
     });
-    console.log("typing...");
-  });
 
-  /**
-   ** @description - socket event stop typing
-   **/
-  socket.on('stop typing', function () {
-    socket.broadcast.emit('stop typing', {
-      username: socket.username
-    });
-    console.log("stop typing...");
-  });
+    io.on("connection", function (socket) {
+      wiLogger.log("info","connected to socket...");
 
-  /**
-   ** @description - socket event user disconnecting
-   **/
-  socket.on('disconnect', function () {
-    console.log("disconnect");
-    // remove the username from global usernames list
-    if (addedUser) {
-      delete usernames[socket.username];
-      --numUsers;
+      socket.room = "room-" + Math.round(new Date().getTime()/1000);;
+      socket.join(socket.room);
 
-      // echo globally that this client has left
-      socket.broadcast.emit('user left', {
-        username: socket.username,
-        numUsers: numUsers
+      socket.emit("ROOM.NAME", socket.room);
+      wiLogger.log("info","emit room name..." + socket.room);
+
+
+      var emit = function(emitCmd, data){
+        wiLogger.log("info","emitCmd : " + emitCmd);
+        wiLogger.log("info","data : " + JSON.stringify(data));
+        wiLogger.log("info","socket.room : " + socket.room);
+        if (socket.room){
+            socket.in(socket.room).broadcast.emit(emitCmd, data);
+        } else {
+            socket.broadcast.emit(emitCmd, data);
+        }
+      }
+
+      socket.on("NEW.MESSAGE", function (data) {
+        wiLogger.log("info","new message... " + data);
+
+        emit("NEW.MESSAGE", {
+          username: socket.username,
+          message: data
+        });
+
       });
-    }
-  });
-});
+
+      socket.on("SET.ROOM", function(room) {
+        wiLogger.log("info", "added to room..." + room);
+
+        if(socket.room !== undefined){
+          socket.leave(socket.room);
+        }
+
+        socket.room = room;
+        socket.join(room);
+
+        emit("USER.JOINED", {
+          username: socket.username
+        });
+      });
+
+      socket.on("PUBLIC", function() {
+        wiLogger.log("info", "public.." + room);
+
+        if(socket.room !== undefined){
+          socket.leave(socket.room);
+          socket.room = undefined;
+        }
+
+        emit("USER.JOINED", {
+          username: socket.username
+        });
+      });
+
+
+      socket.on("ADD.USER", function (username) {
+        socket.username = username;
+        emit("USER.JOINED", {
+          username: socket.username
+        });
+      });
+
+      socket.on("TYPING", function () {
+        wiLogger.log("info", socket.username + " is typing...");
+
+        emit("TYPING", {
+          username: socket.username
+        });
+      });
+
+      socket.on("STOP.TYPING", function () {
+        emit("STOP.TYPING", {
+          username: socket.username
+        });
+      });
+
+      socket.on("DISCONNECT", function () {
+        emit("USER.LEFT", {
+          username: socket.username
+        });
+      });
+    });
+})();
