@@ -25,40 +25,49 @@
     var anonymous_user = ["ANONYMOUS", "NOBODY"];
 
     var options = {
-        socketServer    : null,
-        apxRegionId     : null,
-        currentUser     : null,
-        room            : null,
-        apxChatRoomUrl  : null,
-        apxRoomItemVal  : null,
-        isPublic        : false,
-        ajaxIdentifier  : null,
-        htmlTemplate    : {
-                chatRow :       "<div class='ch-row'>"                                                 +
-                                    "<div class='ch-avatar'>#USERNAME#</div>"                          +
-                                    "<div class='ch-msg'>#MSG#</div>"                                  +
-                                "</div>",
-                typingInfo :    "<div class='ch-ty-row ty-#USR#'>"                                     +
-                                    "<div class='ch-type'>#MSG#</div>"                                 +
-                                "</div>",
-                loginOverlay  : "<div class='ch ch-login'>"                                            +
-                                    "<div class='form'>"                                               +
-                                        "<h3 class='title'>chatname?</h3>"                             +
-                                        "<input class='username' type='text' />"                       +
-                                    "</div>"                                                           +
-                                "</div>",
-                chatInput : "<div class='ch-input-cont'>"                                              +
-                                "<textarea class='ch-input' placeholder='text something'></textarea>"  +
-                            "<div>",
-                buttonTemplate : "<button class='t-Button t-Button--icon t-Button--iconLeft t-Button--hot btn-invite' type='button'>" +
-                                    "<span class='t-Icon t-Icon--left fa fa-link' aria-hidden='true'></span>"                         +
-                                    "<span class='t-Button-label'>Invite Link</span>"                                                 +
-                                    "<span class='t-Icon t-Icon--right fa fa-link' aria-hidden='true'></span>"                        +
-                                "</button>",
-                linkDialog  :   "<div class='invite-dialog' style='display:none' title='Invite link'>"                                +
-                                    "<input type='text' value='#LINK#'></input>"                                                      +
-                                "</div>"
-
+        socketServer         : null,
+        apxRegionId          : null,
+        currentUser          : null,
+        room                 : null,
+        apxChatRoomUrl       : null,
+        apxRoomItemVal       : null,
+        isPublic             : false,
+        ajaxIdentifier       : null,
+        showLeftNotefication : true,
+        showJoinNotefication : true,
+        htmlTemplate         : {
+            chatThreadContainer : "<div class='ch-thread-cont'>"                                                                          +
+                                            "</div>",
+            chatRow             : "<div class='ch-row'>"                                                                                  +
+                                                "<div class='ch-avatar'>#USERNAME#</div>"                                                 +
+                                                "<div class='ch-msg'>#MSG#</div>"                                                         +
+                                            "</div>",
+            typingInfo          : "<div class='ch-ty-row ty-#USR#'>"                                                                      +
+                                                "<div class='ch-type'>#MSG#</div>"                                                        +
+                                            "</div>",
+            userLeftNot         : "<div class='ch-user-left-row ty-#USR#'>"                                                               +
+                                                "<div class='ch-left'>#MSG#</div>"                                                        +
+                                            "</div>",
+            userJoinNot         : "<div class='ch-user-left-row ty-#USR#'>"                                                               +
+                                                "<div class='ch-left'>#MSG#</div>"                                                        +
+                                            "</div>",
+            loginOverlay        : "<div class='ch ch-login'>"                                                                             +
+                                                "<div class='form'>"                                                                      +
+                                                    "<h3 class='title'>chatname?</h3>"                                                    +
+                                                    "<input class='username' type='text' />"                                              +
+                                                "</div>"                                                                                  +
+                                            "</div>",
+            chatInput           : "<div class='ch-input-cont'>"                                                                           +
+                                                "<textarea class='ch-input' placeholder='text something'></textarea>"                     +
+                                            "<div>",
+            buttonTemplate      : "<button class='t-Button t-Button--icon t-Button--iconLeft t-Button--hot btn-invite' type='button'>"    +
+                                                "<span class='t-Icon t-Icon--left fa fa-link' aria-hidden='true'></span>"                 +
+                                                "<span class='t-Button-label'>Invite Link</span>"                                         +
+                                                "<span class='t-Icon t-Icon--right fa fa-link' aria-hidden='true'></span>"                +
+                                            "</button>",
+            linkDialog          : "<div class='invite-dialog' style='display:none' title='Invite link'>"                                  +
+                                                "<input type='text' value='#LINK#'></input>"                                              +
+                                            "</div>"
         }
     };
 
@@ -88,7 +97,7 @@
         rowtemplate = rowtemplate.replace("#MSG#", msg);
         rowtemplate = rowtemplate.replace("#USERNAME#", userName.substring(0,2).toUpperCase());
 
-        this.container.find(".ch-input-cont").before(rowtemplate);
+        this.container.find(".ch-thread-cont").append(rowtemplate);
     };
 
     var rmSimpleLogin = function rmSimpleLogin(){
@@ -104,9 +113,27 @@
             rowtemplate = rowtemplate.replace("#MSG#", user + " " + msg);
             rowtemplate = rowtemplate.replace("#USR#", user);
             this.container.find(".ch-ty-row.ty-" + user).remove();
-            this.container.find(".ch-input-cont").before(rowtemplate);
+            this.container.find(".ch-thread-cont").append(rowtemplate);
         }else{
             this.container.find(".ch-ty-row.ty-" + user).delay(delayRemove).remove();
+        }
+    };
+
+    var userLeftJoin = function userLeftJoin(msg, user, type){
+        var rowtemplate,
+            userName    =  user || this.options.currentUser;
+
+        if (this.options.showLeftNotefication === true && type === "LEFT"){
+            rowtemplate = this.options.htmlTemplate.userLeftNot;
+        }
+        if (this.options.showJoinNotefication === true && type === "JOIN"){
+            rowtemplate = this.options.htmlTemplate.userJoinNot;
+        }
+
+        if (rowtemplate !== undefined){
+            rowtemplate = rowtemplate.replace("#MSG#", user + " " + msg);
+            rowtemplate = rowtemplate.replace("#USR#", user);
+            this.container.find(".ch-thread-cont").append(rowtemplate);
         }
     };
 
@@ -178,8 +205,6 @@
             p_request      : 'PLUGIN=' + this.options.ajaxIdentifier
         };
 
-        if ()
-
         $.ajax({
                 type     : 'POST',
                 url      : 'wwv_flow.show',
@@ -195,7 +220,7 @@
               }.bind(this));
     }
 
-    var setSocketEvents = function() {
+    var setSocketEvents = function setSocketEvents() {
         xDebug.call(this, arguments.callee.name, arguments);
 
         this.socket.on("ROOM.NAME", function (room) {
@@ -207,7 +232,7 @@
                 setInviteButton.call(this);
                 setApxItemVal.call(this, room);
             }
-            console.log(this.options.apxChatRoomUrl);
+
         }.bind(this));
 
         this.socket.on("NEW.MESSAGE", function (data) {
@@ -230,17 +255,22 @@
         }.bind(this));
 
         this.socket.on("USER.JOINED", function (data){
-
+            if (this.options.currentUser !== null) {
+                userLeftJoin.call(this, "has joined your channel...", data.username, "JOIN", 0);
+            }
         }.bind(this));
 
         this.socket.on("USER.LEFT", function (data){
-
+            debugger;
+            if (this.options.currentUser !== null) {
+                userLeftJoin.call(this, "has left your channel...", data.username, "LEFT", 0);
+            }
         }.bind(this));
 
-        if (this.options.room !== null && this.options.isPublic === false){
-            this.socket.emit("SET.ROOM", this.options.room);
+        if ( this.options.room        !== null &&
+             this.options.isPublic    === false){
+            this.socket.emit("SET.ROOM", {room : this.options.room, username:null}); // TODO item username
             this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", this.options.room);
-            console.log(this.options.apxChatRoomUrl);
             setInviteButton.call(this);
             setApxItemVal.call(this, this.options.room);
         }
@@ -250,6 +280,8 @@
         xDebug.call(this, arguments.callee.name, arguments);
 
         this.container.append(this.options.htmlTemplate.chatInput);
+        this.container.append(this.options.htmlTemplate.chatThreadContainer);
+
         setEvents.call(this);
         setSocketEvents.call(this);
 

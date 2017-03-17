@@ -91,9 +91,11 @@
         socket.room = room;
         socket.join(room);
 
-        emit("USER.JOINED", {
-          username: socket.username
-        });
+        if (socket.username !== undefined){
+          emit("USER.JOINED", {
+            username: socket.username
+          });
+        }
       });
 
       socket.on("PUBLIC", function() {
@@ -104,13 +106,16 @@
           socket.room = undefined;
         }
 
-        emit("USER.JOINED", {
-          username: socket.username
-        });
+        if (socket.username !== undefined){
+          emit("USER.JOINED", {
+            username: socket.username
+          });
+        }
       });
 
 
       socket.on("ADD.USER", function (username) {
+        wiLogger.log("info", "add user " + username);
         socket.username = username;
         emit("USER.JOINED", {
           username: socket.username
@@ -131,7 +136,7 @@
         });
       });
 
-      socket.on("DISCONNECT", function () {
+      socket.on("disconnect", function () {
         emit("USER.LEFT", {
           username: socket.username
         });
