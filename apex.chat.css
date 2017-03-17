@@ -16,6 +16,10 @@
     resize: none;
 }
 
+.apx-chat-reg{
+    background-color: rgb(255, 255, 255);
+}
+
 .apx-chat-reg .ch-input-cont{
     border-top: 1px solid #ddd;
     padding: 5px 10px;
@@ -51,8 +55,20 @@
 }
 
 .apx-chat-reg .ch-row,
-.apx-chat-reg .ch-ty-row {
+.apx-chat-reg .ch-ty-row,
+.apx-chat-reg .ch-user-left-row,
+.apx-chat-reg .ch-user-join-row{
     padding: 5px;
+    overflow: hidden;
+}
+
+
+.apx-chat-reg .ch-user-left-row .ch-left,
+.apx-chat-reg .ch-user-join-row .ch-join{
+    padding: 5px 10px;
+    background: #ebebeb;
+    float: left;
+    border-radius: 32px;
     overflow: hidden;
 }
 
@@ -82,4 +98,49 @@
     padding: 2px 15px;
     background-color: rgba(221, 221, 221, 0.36);
     display: inline-block;
+}
+
+.right-col,
+.right-col .t-Region-bodyWrap,
+.right-col .t-Region-body,
+.right-col .apx-chat-reg,
+.right-col .ch-login {
+    height: 100%;
+}
+
+.right-col .apx-chat-reg .username{
+    width: auto;
+}
+
+.right-col .apx-chat-reg .ch-input-cont{
+    display: block;
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+}
+
+.right-col .t-Button-label{
+  display: none;
+}
+.right-col span.t-Icon{
+    margin: 0px;
+}
+
+.right-col .apx-chat-reg{
+    border-left: 1px solid #ddd;
+}
+
+.right-col .t-Region-body{
+    margin-top:-7px;
+}
+
+
+body.t-PageBody.js-rightCollapsed .t-Body-actions {
+    -webkit-transform: translate3d(300px, 0, 0);
+    -ms-transform: translate(300px);
+    transform: translate3d(300px, 0, 0);
+}
+
+.t-Body .t-Body-actions {
+    width: 300px;
 }
