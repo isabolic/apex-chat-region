@@ -36,10 +36,11 @@
         showLeftNotefication : true,
         showJoinNotefication : true,
         htmlTemplate         : {
-            chatThreadContainer : "<div class='ch-thread-cont'>"                                                                          +
+            chatThreadContainer : "<div class='ch-thread-cont' style='display:none'>"                                                     +
                                             "</div>",
             chatRow             : "<div class='ch-row'>"                                                                                  +
-                                                "<div class='ch-avatar'>#USERNAME#</div>"                                                 +
+                                                "<div class='ch-avatar'>#AVATAR#</div>"                                                   +
+                                                "<div class='ch-username'>#USERNAME#</div>"                                               +
                                                 "<div class='ch-msg'>#MSG#</div>"                                                         +
                                             "</div>",
             typingInfo          : "<div class='ch-ty-row ty-#USR#'>"                                                                      +
@@ -48,8 +49,8 @@
             userLeftNot         : "<div class='ch-user-left-row ty-#USR#'>"                                                               +
                                                 "<div class='ch-left'>#MSG#</div>"                                                        +
                                             "</div>",
-            userJoinNot         : "<div class='ch-user-left-row ty-#USR#'>"                                                               +
-                                                "<div class='ch-left'>#MSG#</div>"                                                        +
+            userJoinNot         : "<div class='ch-user-join-row ty-#USR#'>"                                                               +
+                                                "<div class='ch-join'>#MSG#</div>"                                                        +
                                             "</div>",
             loginOverlay        : "<div class='ch ch-login'>"                                                                             +
                                                 "<div class='form'>"                                                                      +
@@ -90,12 +91,56 @@
         $(this).trigger(evt + "." + this.apexname, [evtData]);
     };
 
+     /**
+     * [intervalFlag call passed function repeatedly "fnIntervat", stop only when flagForClear is set to true ]
+     * @param  {[type]} fnIntervat   [function for repeatedly call]
+     * @param  {[type]} flagForClear [key prop. on this scope]
+     * @param  {[type]} timer        [timer, def. 200]
+     */
+    var intervalFlag = function  intervalFlag(fnIntervat, flagForClear, timer){
+      var interval;
+
+      xDebug.call(this, arguments.callee.name, arguments);
+
+      this[flagForClear] = false;
+
+      interval = setInterval(function(){
+                    fnIntervat.call(this);
+
+                    if (this[flagForClear]){
+                      clearInterval(interval);
+                    }
+                  }.bind(this), (timer || 200));
+    };
+
+    var setChatContHeight = function setChatContHeight(){
+        var el = this.container
+                     .find(".ch-thread-cont")
+            topParent = this.parent.parent();
+
+        xDebug.call(this, arguments.callee.name, arguments);
+
+        if (el.is(":visible") === true) {
+            if(topParent.hasClass("t-Body-actionsContent") === true){
+                height =    topParent.height()                                      -
+                            this.parent.find(".t-Region-header").outerHeight(true)  -
+                            this.container.find(".ch-input-cont").outerHeight(true);
+
+                el.height(height);
+            }else{
+                el.height(this.parent.find(".t-Region-body").height() - this.container.find(".ch-input-cont").outerHeight(true));
+            }
+            this.isRendered = true;
+        }
+    };
+
     var addMessageElement = function addMessageElement (msg, user){
         var rowtemplate = this.options.htmlTemplate.chatRow,
             userName    =  user || this.options.currentUser;
 
-        rowtemplate = rowtemplate.replace("#MSG#", msg);
-        rowtemplate = rowtemplate.replace("#USERNAME#", userName.substring(0,2).toUpperCase());
+        rowtemplate = rowtemplate.replace("#MSG#"     , msg                                  );
+        rowtemplate = rowtemplate.replace("#AVATAR#"  , userName.substring(0,2).toUpperCase());
+        rowtemplate = rowtemplate.replace("#USERNAME#", userName                             );
 
         this.container.find(".ch-thread-cont").append(rowtemplate);
     };
@@ -103,6 +148,7 @@
     var rmSimpleLogin = function rmSimpleLogin(){
         this.container.find(".ch-login").remove();
         this.container.find(".ch-input-cont").show();
+        this.container.find(".ch-thread-cont").show();
     };
 
     var typeInfo = function typeInfo(msg, user, action, delayRemove){
@@ -166,8 +212,6 @@
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(typingTimeOut, typingInterval);
             }
-
-
         }.bind(this));
 
         this.container.on("keydown", ".username", function(e){
@@ -175,8 +219,14 @@
             if (e.keyCode === 13) {
                 if (username !== ""){
                     this.options.currentUser = username;
-                    this.socket.emit("ADD.USER", this.options.currentUser);
+                    console.log(this.options.currentUser);
+                    this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
+                    //this.socket.emit("ADD.USER", {username: this.options.currentUser});
                     rmSimpleLogin.call(this);
+
+                    if (this.parent.hasClass("right-col") === true) {
+                        intervalFlag.call(this, setChatContHeight, "isRendered");
+                    }
                 }
 
                 e.preventDefault();
@@ -185,10 +235,19 @@
         }.bind(this));
 
         this.parent.on("click", ".btn-invite", function(e){
-                this.linkDialog.dialog({width:500, height:90}).show();
-                e.preventDefault();
-                return false;
+            this.linkDialog.dialog({width:500, height:90}).show();
+            e.preventDefault();
+            return false;
         }.bind(this));
+
+        if (this.parent.hasClass("right-col") === true) {
+            // reg. resize event
+            $(window).resize(function(){
+                intervalFlag.call(
+                    this, setChatContHeight, "isRendered", 500
+                );
+            }.bind(this));
+        }
     };
 
     var setApxItemVal = function setApxItemVal(val){
@@ -213,7 +272,6 @@
                 async    : true
             }).done(function(data){
                 xDebug.call(this, arguments.callee.name, arguments);
-                x.debug('response : ' || data);
               }.bind(this))
                .fail(function(data) {
                 alert( "error : " || data );
@@ -244,7 +302,7 @@
 
         this.socket.on("TYPING", function (data) {
             if (this.options.currentUser !== null) {
-                typeInfo.call(this, "typing..", data.username, "show");
+                typeInfo.call(this, "is typing..", data.username, "show");
             }
         }.bind(this));
 
@@ -261,7 +319,6 @@
         }.bind(this));
 
         this.socket.on("USER.LEFT", function (data){
-            debugger;
             if (this.options.currentUser !== null) {
                 userLeftJoin.call(this, "has left your channel...", data.username, "LEFT", 0);
             }
@@ -269,28 +326,41 @@
 
         if ( this.options.room        !== null &&
              this.options.isPublic    === false){
-            this.socket.emit("SET.ROOM", {room : this.options.room, username:null}); // TODO item username
             this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", this.options.room);
             setInviteButton.call(this);
             setApxItemVal.call(this, this.options.room);
         }
+
+        if (this.options.currentUser !== null){
+            console.log(this.options.currentUser);
+            this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser}); // TODO item username
+        }
     };
+
+
+
 
     var setDom = function setDom(){
         xDebug.call(this, arguments.callee.name, arguments);
 
-        this.container.append(this.options.htmlTemplate.chatInput);
         this.container.append(this.options.htmlTemplate.chatThreadContainer);
-
-        setEvents.call(this);
-        setSocketEvents.call(this);
+        this.container.append(this.options.htmlTemplate.chatInput);
 
         if (this.options.currentUser === null ||
             anonymous_user.indexOf(this.options.currentUser.toUpperCase()) > -1) {
             this.container.append(this.options.htmlTemplate.loginOverlay);
             this.container.find(".ch-input-cont").hide();
             this.options.currentUser = null;
+        }else{
+            rmSimpleLogin.call(this);
         }
+
+        if (this.parent.hasClass("right-col") === true) {
+            intervalFlag.call(this, setChatContHeight, "isRendered");
+        }
+
+        setEvents.call(this);
+        setSocketEvents.call(this);
 
     };
 
@@ -313,6 +383,7 @@
         this.options = {};
         this.parent = null;
         this.linkDialog = null;
+        this.isRendered = false;
         this.init  = function(){
 
             if (window.io === undefined || $.isFunction(io.Socket) === false){

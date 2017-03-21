@@ -62,34 +62,41 @@
     overflow: hidden;
 }
 
+.apx-chat-reg .ch-user-join-row .ch-join{
+    background: rgba(122, 232, 253, 0.35);
+    float: right;
+}
+
+.apx-chat-reg .ch-user-left-row .ch-left{
+    background: rgba(130, 124, 212, 0.35);
+    float: left;
+}
 
 .apx-chat-reg .ch-user-left-row .ch-left,
 .apx-chat-reg .ch-user-join-row .ch-join{
     padding: 5px 10px;
-    background: #ebebeb;
-    float: left;
     border-radius: 32px;
     overflow: hidden;
 }
 
 .apx-chat-reg .ch-avatar{
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 30px;
     background-color: rgb(245, 245, 245);
     border: 1px solid rgb(227, 227, 227);
     text-align: center;
-    line-height: 30px;
+    line-height: 35px;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 19px;
     display: block;
     float: left;
     margin-right: 10px;
 }
 
 .apx-chat-reg .ch-msg{
-    float: left;
-    line-height: 30px;
+    line-height: 15px;
+    word-break: break-word;
 }
 
 .apx-chat-reg .ch-ty-row .ch-type{
@@ -114,14 +121,12 @@
 
 .right-col .apx-chat-reg .ch-input-cont{
     display: block;
-    position: absolute;
-    bottom: 50px;
-    width: 100%;
 }
 
 .right-col .t-Button-label{
   display: none;
 }
+
 .right-col span.t-Icon{
     margin: 0px;
 }
@@ -129,11 +134,6 @@
 .right-col .apx-chat-reg{
     border-left: 1px solid #ddd;
 }
-
-.right-col .t-Region-body{
-    margin-top:-7px;
-}
-
 
 body.t-PageBody.js-rightCollapsed .t-Body-actions {
     -webkit-transform: translate3d(300px, 0, 0);
@@ -143,4 +143,17 @@ body.t-PageBody.js-rightCollapsed .t-Body-actions {
 
 .t-Body .t-Body-actions {
     width: 300px;
+}
+
+@media only screen and (min-width: 641px){
+    body.t-PageBody.js-rightExpanded.t-PageBody--hideLeft .t-Body-title {
+        right: 300px;
+    }
+}
+
+.apx-chat-reg .ch-username{
+    font-weight: bold;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
