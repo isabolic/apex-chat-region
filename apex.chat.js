@@ -24,6 +24,15 @@
      */
     var anonymous_user = ["ANONYMOUS", "NOBODY"];
 
+    var lang = {
+        chatname            : apex.lang.getMessage("AXCHAT.LOGIN.CHATNAME.PROMPT") || "chatname?",
+        textareaPlaceholder : apex.lang.getMessage("AXCHAT.TEXTAREA.MSG.PHOLDER")  || "Text something",
+        btnLabel            : apex.lang.getMessage("AXCHAT.BUTTON.LABEL")          || "Invite link",
+        linkDlgtitle        : apex.lang.getMessage("AXCHAT.DIALOG.TITLE")          || "Invite link",
+        notUserJoin         : apex.lang.getMessage("AXCHAT.USER.JOIN")             || "has joined your channel...",
+        notUserLeft         : apex.lang.getMessage("AXCHAT.USER.LEFT")             || "has left your channel..."
+    }
+
     var options = {
         socketServer         : null,
         apxRegionId          : null,
@@ -38,7 +47,7 @@
         htmlTemplate         : {
             chatThreadContainer : "<div class='ch-thread-cont' style='display:none'>"                                                     +
                                             "</div>",
-            chatRow             : "<div class='ch-row'>"                                                                                  +
+            chatRow             : "<div class='ch-row' style='border-color: ##BOR-COL#'>"                                                 +
                                                 "<div class='ch-avatar'>#AVATAR#</div>"                                                   +
                                                 "<div class='ch-username'>#USERNAME#</div>"                                               +
                                                 "<div class='ch-msg'>#MSG#</div>"                                                         +
@@ -113,6 +122,22 @@
                   }.bind(this), (timer || 200));
     };
 
+    var hashCode = function hashCode(str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+           hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return hash;
+    };
+
+    var intToRGB = function intToRGB(i){
+        var c = (i & 0x00FFFFFF)
+            .toString(16)
+            .toUpperCase();
+
+        return "00000".substring(0, 6 - c.length) + c;
+    }
+
     var setChatContHeight = function setChatContHeight(){
         var el = this.container
                      .find(".ch-thread-cont")
@@ -141,8 +166,18 @@
         rowtemplate = rowtemplate.replace("#MSG#"     , msg                                  );
         rowtemplate = rowtemplate.replace("#AVATAR#"  , userName.substring(0,2).toUpperCase());
         rowtemplate = rowtemplate.replace("#USERNAME#", userName                             );
+        rowtemplate = rowtemplate.replace("#BOR-COL#" , intToRGB(hashCode(userName))         );
 
         this.container.find(".ch-thread-cont").append(rowtemplate);
+
+        this.container
+            .find(".ch-thread-cont")
+            .scrollTop(
+                this.container
+                    .find(".ch-thread-cont")
+                    .get(0)
+                    .scrollHeight
+                );
     };
 
     var rmSimpleLogin = function rmSimpleLogin(){
@@ -219,9 +254,7 @@
             if (e.keyCode === 13) {
                 if (username !== ""){
                     this.options.currentUser = username;
-                    console.log(this.options.currentUser);
                     this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
-                    //this.socket.emit("ADD.USER", {username: this.options.currentUser});
                     rmSimpleLogin.call(this);
 
                     if (this.parent.hasClass("right-col") === true) {
@@ -332,8 +365,8 @@
         }
 
         if (this.options.currentUser !== null){
-            console.log(this.options.currentUser);
-            this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser}); // TODO item username
+             // TODO item username
+            this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
         }
     };
 
