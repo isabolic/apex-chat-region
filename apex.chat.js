@@ -24,14 +24,7 @@
      */
     var anonymous_user = ["ANONYMOUS", "NOBODY"];
 
-    var lang = {
-        chatname            : apex.lang.getMessage("AXCHAT.LOGIN.CHATNAME.PROMPT") || "chatname?",
-        textareaPlaceholder : apex.lang.getMessage("AXCHAT.TEXTAREA.MSG.PHOLDER")  || "Text something",
-        btnLabel            : apex.lang.getMessage("AXCHAT.BUTTON.LABEL")          || "Invite link",
-        linkDlgtitle        : apex.lang.getMessage("AXCHAT.DIALOG.TITLE")          || "Invite link",
-        notUserJoin         : apex.lang.getMessage("AXCHAT.USER.JOIN")             || "has joined your channel...",
-        notUserLeft         : apex.lang.getMessage("AXCHAT.USER.LEFT")             || "has left your channel..."
-    }
+
 
     var options = {
         socketServer         : null,
@@ -47,35 +40,35 @@
             chatThreadContainer : "<div class='ch-thread-cont' style='display:none'>"                                                     +
                                             "</div>",
             chatRow             : "<div class='ch-row'>"                                                                                  +
-                                                "<div class='ch-avatar'>#AVATAR#</div>"                                                   +
-                                                "<div class='ch-username'>#USERNAME#</div>"                                               +
-                                                "<div class='ch-msg #CURRENT_USR#'>#MSG#</div>"                                           +
+                                                "<div class='ch-avatar'>{{avatar}}</div>"                                                 +
+                                                "<div class='ch-username'>{{username}}</div>"                                             +
+                                                "<div class='ch-msg {{current_usr}}'>{{msg}}</div>"                                       +
                                             "</div>",
-            typingInfo          : "<div class='ch-ty-row ty-#USR#'>"                                                                      +
-                                                "<div class='ch-type'>#MSG#</div>"                                                        +
+            typingInfo          : "<div class='ch-ty-row ty-{{usr}}'>"                                                                    +
+                                                "<div class='ch-type'>{{msg}}</div>"                                                      +
                                             "</div>",
-            userLeftNot         : "<div class='ch-user-left-row ty-#USR#'>"                                                               +
-                                                "<div class='ch-left'>#MSG#</div>"                                                        +
+            userLeftNot         : "<div class='ch-user-left-row ty-{{usr}}'>"                                                             +
+                                                "<div class='ch-left'>{{msg}}</div>"                                                      +
                                             "</div>",
-            userJoinNot         : "<div class='ch-user-join-row ty-#USR#'>"                                                               +
-                                                "<div class='ch-join'>#MSG#</div>"                                                        +
+            userJoinNot         : "<div class='ch-user-join-row ty-{{usr}}'>"                                                             +
+                                                "<div class='ch-join'>{{msg}}</div>"                                                      +
                                             "</div>",
             loginOverlay        : "<div class='ch ch-login'>"                                                                             +
                                                 "<div class='form'>"                                                                      +
-                                                    "<h3 class='title'>chatname?</h3>"                                                    +
+                                                    "<h3 class='title'>{{lang.chatname}}</h3>"                                            +
                                                     "<input class='username' type='text' />"                                              +
                                                 "</div>"                                                                                  +
                                             "</div>",
             chatInput           : "<div class='ch-input-cont'>"                                                                           +
-                                                "<textarea class='ch-input' placeholder='text something'></textarea>"                     +
+                                                "<textarea class='ch-input' placeholder='{{lang.textareaPlaceholder}}'></textarea>"       +
                                             "<div>",
             buttonTemplate      : "<button class='t-Button t-Button--icon t-Button--iconLeft t-Button--hot btn-invite' type='button'>"    +
                                                 "<span class='t-Icon t-Icon--left fa fa-link' aria-hidden='true'></span>"                 +
-                                                "<span class='t-Button-label'>Invite Link</span>"                                         +
+                                                "<span class='t-Button-label'>{{lang.btnLabel}}</span>"                                   +
                                                 "<span class='t-Icon t-Icon--right fa fa-link' aria-hidden='true'></span>"                +
                                             "</button>",
-            linkDialog          : "<div class='invite-dialog' style='display:none' title='Invite link'>"                                  +
-                                                "<input type='text' value='#LINK#'></input>"                                              +
+            linkDialog          : "<div class='invite-dialog' style='display:none' title='{{lang.linkDlgtitle}}'>"                        +
+                                                "<input type='text' value='{{link}}'></input>"                                            +
                                             "</div>"
         }
     };
@@ -121,6 +114,27 @@
                   }.bind(this), (timer || 200));
     };
 
+    var getMessage = function getMessage(code){
+        var ret = apex.lang.getMessage(code);
+        if (ret === code){
+            ret = undefined;
+        }
+        return ret;
+    };
+
+    var compileTemplate = function compileTemplate (templateName, data){
+        var template = this.options.htmlTemplate[templateName], data;
+
+        template = Handlebars.compile(template);
+
+        data = $.extend({}, data, {"lang":lang});
+
+        template = template(data);
+
+
+        return template;
+    }
+
     // deprecated - TODO remove
     var hashCode = function hashCode(str) {
         var hash = 0;
@@ -161,18 +175,18 @@
     };
 
     var addMessageElement = function addMessageElement (msg, user){
-        var rowtemplate = this.options.htmlTemplate.chatRow,
-            userName    =  user || this.options.currentUser;
+        var userName  =  user || this.options.currentUser,
+            rowtemplate;
 
-        rowtemplate = rowtemplate.replace("#MSG#"     , msg                                  );
-        rowtemplate = rowtemplate.replace("#AVATAR#"  , userName.substring(0,2).toUpperCase());
-        rowtemplate = rowtemplate.replace("#USERNAME#", userName                             );
-
-        if (this.options.currentUser === userName) {
-            rowtemplate = rowtemplate.replace("#CURRENT_USR#" , "current-usr");
-        } else {
-            rowtemplate = rowtemplate.replace("#CURRENT_USR#" , "");
-        }
+        rowtemplate = compileTemplate.call( this,
+                                            "chatRow",
+                                            {
+                                                "msg"         : msg,
+                                                "avatar"      : userName.substring(0,2).toUpperCase(),
+                                                "username"    : userName,
+                                                "current_usr" : this.options.currentUser === userName ? "current-usr" : ""
+                                            }
+                                        );
 
         rowtemplate = $(rowtemplate);
 
@@ -196,15 +210,24 @@
     };
 
     var typeInfo = function typeInfo(msg, user, action, delayRemove){
-            var rowtemplate = this.options.htmlTemplate.typingInfo,
-                userName    =  user || this.options.currentUser;
+            var userName   = user || this.options.currentUser,
+                rowtemplate;
 
         if(action === "show"){
-            rowtemplate = rowtemplate.replace("#MSG#", user + " " + msg);
-            rowtemplate = rowtemplate.replace("#USR#", user);
+
+            rowtemplate = compileTemplate.call(
+                                            this,
+                                            "typingInfo",
+                                            {
+                                                "msg"         : user + " " + msg,
+                                                "usr"         : user
+                                            }
+                                        );
+
             this.container.find(".ch-ty-row.ty-" + user).remove();
             this.container.find(".ch-thread-cont").append(rowtemplate);
-        }else{
+
+        } else {
             this.container.find(".ch-ty-row.ty-" + user).delay(delayRemove).remove();
         }
     };
@@ -214,15 +237,23 @@
             userName    =  user || this.options.currentUser;
 
         if (this.options.showLeftNotefication === true && type === "LEFT"){
-            rowtemplate = this.options.htmlTemplate.userLeftNot;
+            rowtemplate = "userLeftNot";
         }
         if (this.options.showJoinNotefication === true && type === "JOIN"){
-            rowtemplate = this.options.htmlTemplate.userJoinNot;
+            rowtemplate = "userJoinNot";
         }
 
         if (rowtemplate !== undefined){
-            rowtemplate = rowtemplate.replace("#MSG#", user + " " + msg);
-            rowtemplate = rowtemplate.replace("#USR#", user);
+
+            rowtemplate = compileTemplate.call(
+                                            this,
+                                            rowtemplate,
+                                            {
+                                                "msg"         : user + " " + msg,
+                                                "usr"         : user
+                                            }
+                                        );
+
             this.container.find(".ch-thread-cont").append(rowtemplate);
         }
     };
@@ -382,15 +413,38 @@
     var setDom = function setDom(){
         xDebug.call(this, arguments.callee.name, arguments);
 
-        this.container.append(this.options.htmlTemplate.chatThreadContainer);
-        this.container.append(this.options.htmlTemplate.chatInput);
+        this.container
+            .append(compileTemplate.call(
+                        this,
+                        "chatThreadContainer",
+                        {}
+                    )
+            );
+
+        this.container
+            .append(compileTemplate.call(
+                        this,
+                        "chatInput",
+                        {}
+                    )
+            );
 
         if (this.options.currentUser === null ||
             anonymous_user.indexOf(this.options.currentUser.toUpperCase()) > -1) {
-            this.container.append(this.options.htmlTemplate.loginOverlay);
+
+            this.container
+                .append(
+                    compileTemplate.call(
+                        this,
+                        "loginOverlay",
+                        {}
+                    )
+                );
+
             this.container.find(".ch-input-cont").hide();
             this.options.currentUser = null;
-        }else{
+
+        } else {
             rmSimpleLogin.call(this);
         }
 
@@ -404,14 +458,26 @@
     };
 
     var setInviteButton = function setInviteButton(){
-        var buttonTemplate = this.options.htmlTemplate.buttonTemplate,
-            dlgTemplate    = this.options.htmlTemplate.linkDialog,
-            dlgTemplate    = dlgTemplate.replace("#LINK#", this.options.apxChatRoomUrl);
+        var buttonTemplate,dlgTemplate;
+
+            dlgTemplate = compileTemplate.call(
+                                            this,
+                                            "linkDialog",
+                                            {"link" : this.options.apxChatRoomUrl}
+                                        );
+
+            buttonTemplate = compileTemplate.call(
+                                            this,
+                                            "buttonTemplate",
+                                            {}
+                                        );
 
         if (this.options.room !== null){
             this.parent.find(".t-Region-headerItems--buttons").prepend(buttonTemplate);
         }
+
         this.linkDialog = $(dlgTemplate);
+
         $("body").append(dlgTemplate);
     }
 
@@ -461,5 +527,14 @@
     }
 
     apex.plugins.apexChat.prototype = {};
+
+    var lang = {
+        chatname            : getMessage("AXCHAT.LOGIN.CHATNAME.PROMPT") || "chatname?",
+        textareaPlaceholder : getMessage("AXCHAT.TEXTAREA.MSG.PHOLDER")  || "Text something",
+        btnLabel            : getMessage("AXCHAT.BUTTON.LABEL")          || "Invite link",
+        linkDlgtitle        : getMessage("AXCHAT.DIALOG.TITLE")          || "Invite link",
+        notUserJoin         : getMessage("AXCHAT.USER.JOIN")             || "has joined your channel...",
+        notUserLeft         : getMessage("AXCHAT.USER.LEFT")             || "has left your channel..."
+    }
 
 })(apex.jQuery, apex);
