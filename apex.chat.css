@@ -54,10 +54,6 @@
     font-weight: bold;
 }
 
-.apx-chat-reg .ch-row{
-    border-bottom: 1px solid #ddd;
-}
-
 .apx-chat-reg .ch-row,
 .apx-chat-reg .ch-ty-row,
 .apx-chat-reg .ch-user-left-row,
@@ -101,19 +97,17 @@
 .apx-chat-reg .ch-msg{
     line-height: 15px;
     word-break: break-word;
-    margin-left: 35px;
-    /*border-bottom: 1px solid #ddd;*/
-    /*border-left: 1px solid #ddd;*/
+    margin-left: 40px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+    background: rgba(230, 230, 230, 0.85);
     padding: 5px;
     border-bottom-left-radius: 6px;
 }
 
-.apx-chat-reg .ch-ty-row .ch-type{
-    border: 1px solid #ddd;
-    border-radius: 15px;
-    padding: 2px 15px;
-    background-color: rgba(73, 255, 40, 0.25);
-    display: inline-block;
+.apx-chat-reg .ch-msg.current-usr{
+    background: rgba(41, 161, 212, 0.32);
 }
 
 .right-col,
@@ -125,7 +119,7 @@
 }
 
 .ch-thread-cont{
-    overflow: scroll;
+    overflow: auto;
 }
 
 .right-col .apx-chat-reg .username{
@@ -146,6 +140,10 @@
 
 .right-col .apx-chat-reg{
     border-left: 1px solid #ddd;
+}
+
+.right-col.t-Region.is-maximized>.t-Region-bodyWrap>.t-Region-body{
+    height: 100% !important;
 }
 
 body.t-PageBody.js-rightCollapsed .t-Body-actions {
@@ -171,7 +169,15 @@ body.t-PageBody.js-rightCollapsed .t-Body-actions {
     text-overflow: ellipsis;
 }
 
-.ch-type:after {
+.apx-chat-reg .ch-type{
+    padding: 5px 10px;
+    border-radius: 32px;
+    overflow: hidden;
+    background: rgba(76, 217, 100, 0.43);
+    float: left;
+}
+
+.apx-chat-reg .ch-type:after {
   overflow: hidden;
   display: inline-block;
   vertical-align: bottom;

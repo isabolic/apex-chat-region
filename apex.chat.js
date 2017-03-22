@@ -40,17 +40,16 @@
         room                 : null,
         apxChatRoomUrl       : null,
         apxRoomItemVal       : null,
-        isPublic             : false,
         ajaxIdentifier       : null,
         showLeftNotefication : true,
         showJoinNotefication : true,
         htmlTemplate         : {
             chatThreadContainer : "<div class='ch-thread-cont' style='display:none'>"                                                     +
                                             "</div>",
-            chatRow             : "<div class='ch-row' style='border-color: ##BOR-COL#'>"                                                 +
+            chatRow             : "<div class='ch-row'>"                                                                                  +
                                                 "<div class='ch-avatar'>#AVATAR#</div>"                                                   +
                                                 "<div class='ch-username'>#USERNAME#</div>"                                               +
-                                                "<div class='ch-msg'>#MSG#</div>"                                                         +
+                                                "<div class='ch-msg #CURRENT_USR#'>#MSG#</div>"                                           +
                                             "</div>",
             typingInfo          : "<div class='ch-ty-row ty-#USR#'>"                                                                      +
                                                 "<div class='ch-type'>#MSG#</div>"                                                        +
@@ -122,6 +121,7 @@
                   }.bind(this), (timer || 200));
     };
 
+    // deprecated - TODO remove
     var hashCode = function hashCode(str) {
         var hash = 0;
         for (var i = 0; i < str.length; i++) {
@@ -130,6 +130,7 @@
         return hash;
     };
 
+    // deprecated - TODO remove
     var intToRGB = function intToRGB(i){
         var c = (i & 0x00FFFFFF)
             .toString(16)
@@ -166,10 +167,18 @@
         rowtemplate = rowtemplate.replace("#MSG#"     , msg                                  );
         rowtemplate = rowtemplate.replace("#AVATAR#"  , userName.substring(0,2).toUpperCase());
         rowtemplate = rowtemplate.replace("#USERNAME#", userName                             );
-        rowtemplate = rowtemplate.replace("#BOR-COL#" , intToRGB(hashCode(userName))         );
+
+        if (this.options.currentUser === userName) {
+            rowtemplate = rowtemplate.replace("#CURRENT_USR#" , "current-usr");
+        } else {
+            rowtemplate = rowtemplate.replace("#CURRENT_USR#" , "");
+        }
+
+        rowtemplate = $(rowtemplate);
 
         this.container.find(".ch-thread-cont").append(rowtemplate);
 
+        // scroll to bottom
         this.container
             .find(".ch-thread-cont")
             .scrollTop(
@@ -256,6 +265,7 @@
                     this.options.currentUser = username;
                     this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
                     rmSimpleLogin.call(this);
+                    setApxItemVal.call(this, this.options.room);
 
                     if (this.parent.hasClass("right-col") === true) {
                         intervalFlag.call(this, setChatContHeight, "isRendered");
@@ -317,7 +327,7 @@
         this.socket.on("ROOM.NAME", function (room) {
             xDebug.call(this, arguments.callee.name, arguments);
 
-            if (this.options.room === null && this.options.isPublic === false){
+            if (this.options.room === null){
                 this.options.room = room;
                 this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", room);
                 setInviteButton.call(this);
@@ -353,25 +363,21 @@
 
         this.socket.on("USER.LEFT", function (data){
             if (this.options.currentUser !== null) {
+                typeInfo.call(this, "", data.username, "hide", 0);
                 userLeftJoin.call(this, "has left your channel...", data.username, "LEFT", 0);
             }
         }.bind(this));
 
-        if ( this.options.room        !== null &&
-             this.options.isPublic    === false){
+        if ( this.options.room        !== null ){
             this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", this.options.room);
             setInviteButton.call(this);
             setApxItemVal.call(this, this.options.room);
-        }
 
-        if (this.options.currentUser !== null){
-             // TODO item username
-            this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
+            if (this.options.currentUser !== null) {
+                this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
+            }
         }
     };
-
-
-
 
     var setDom = function setDom(){
         xDebug.call(this, arguments.callee.name, arguments);
@@ -402,7 +408,7 @@
             dlgTemplate    = this.options.htmlTemplate.linkDialog,
             dlgTemplate    = dlgTemplate.replace("#LINK#", this.options.apxChatRoomUrl);
 
-        if (this.options.isPublic === false && this.options.room !== null){
+        if (this.options.room !== null){
             this.parent.find(".t-Region-headerItems--buttons").prepend(buttonTemplate);
         }
         this.linkDialog = $(dlgTemplate);
@@ -419,15 +425,15 @@
         this.isRendered = false;
         this.init  = function(){
 
-            if (window.io === undefined || $.isFunction(io.Socket) === false){
+            if (window.io === undefined || $.isFunction(io.Socket) === false) {
                 throw this.jsName || ": requires socket.io (https://github.com/socketio/socket.io)";
             }
 
-            if (window.Handlebars === undefined){
+            if (window.Handlebars === undefined) {
                 throw this.jsName || ": requires handlebars.js (http://handlebarsjs.com/)";
             }
 
-            if ($.type(opts) ===  "string"){
+            if ($.type(opts) ===  "string") {
                 opts = JSON.parse(opts);
             }
 
@@ -440,7 +446,7 @@
             this.socket = io(this.options.socketServer);
             this.parent = $(this.options.apxRegionId);
 
-            if( this.parent.find(".t-Region-body").length > 0){
+            if (this.parent.find(".t-Region-body").length > 0) {
                 this.parent.find(".t-Region-body").append(this.container);
             } else {
                 this.parent.append(this.container);
