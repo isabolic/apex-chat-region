@@ -140,9 +140,9 @@
        v_chat_room_itm p_plugin.attribute_02%type := p_region.attribute_02;
        v_config        clob;
        v_room          wwv_flow.g_x01%type := wwv_flow.g_x01;
+       v_user          wwv_flow.g_x02%type := wwv_flow.g_x02;
     begin
-        p_log(v_chat_room_itm);
-        p_log(v_room);
+
         apex_util.set_session_state(v_chat_room_itm, v_room);
 
         apex_json.initialize_clob_output;
