@@ -61,8 +61,8 @@
 
 
       var emit = function(emitCmd, data){
-        //wiLogger.log("info","emitCmd : " + emitCmd);
-        //wiLogger.log("info","data : " + JSON.stringify(data));
+        wiLogger.log("info","emitCmd : " + emitCmd);
+        wiLogger.log("info","data : " + JSON.stringify(data));
         wiLogger.log("info","socket.room : " + socket.room);
         if (socket.room !== undefined){
             socket.in(socket.room).broadcast.emit(emitCmd, data);
