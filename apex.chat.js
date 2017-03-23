@@ -24,8 +24,6 @@
      */
     var anonymous_user = ["ANONYMOUS", "NOBODY"];
 
-
-
     var options = {
         socketServer         : null,
         apxRegionId          : null,
@@ -113,79 +111,65 @@
                 clearInterval(interval);
             }
         }.bind(this), (timer || 200));
+
     };
 
     var getMessage = function getMessage(code){
         var ret = apex.lang.getMessage(code);
-        if (ret === code){
+        if (ret === code) {
             ret = undefined;
         }
         return ret;
+
     };
 
     var compileTemplate = function compileTemplate (templateName, data){
-        var template = this.options.htmlTemplate[templateName], data;
+        var template = this.options.htmlTemplate[templateName],
+            data;
 
         template = Handlebars.compile(template);
 
-        data = $.extend({}, data, {"lang":lang});
+        data = $.extend({}, data, { "lang": lang });
 
         template = template(data);
         return template;
-    }
 
-    // deprecated - TODO remove
-    var hashCode = function hashCode(str) {
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-           hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return hash;
-    };
-
-    // deprecated - TODO remove
-    var intToRGB = function intToRGB(i){
-        var c = (i & 0x00FFFFFF)
-            .toString(16)
-            .toUpperCase();
-
-        return "00000".substring(0, 6 - c.length) + c;
     }
 
     var setChatContHeight = function setChatContHeight(){
         var el = this.container
-                     .find(".ch-thread-cont")
-            topParent = this.parent.parent();
+            .find(".ch-thread-cont")
+        topParent = this.parent.parent();
 
         xDebug.call(this, arguments.callee.name, arguments);
 
         if (el.is(":visible") === true) {
-            if(topParent.hasClass("t-Body-actionsContent") === true){
-                height =    topParent.height()                                      -
-                            this.parent.find(".t-Region-header").outerHeight(true)  -
-                            this.container.find(".ch-input-cont").outerHeight(true);
+            if (topParent.hasClass("t-Body-actionsContent") === true) {
+                height = topParent.height() -
+                    this.parent.find(".t-Region-header").outerHeight(true) -
+                    this.container.find(".ch-input-cont").outerHeight(true);
 
                 el.height(height);
-            }else{
+            } else {
                 el.height(this.parent.find(".t-Region-body").height() - this.container.find(".ch-input-cont").outerHeight(true));
             }
             this.isRendered = true;
         }
+
     };
 
     var addMessageElement = function addMessageElement (msg, user){
-        var userName  =  user || this.options.currentUser,
+        var userName = user || this.options.currentUser,
             rowtemplate;
 
-        rowtemplate = compileTemplate.call( this,
-                                            "chatRow",
-                                            {
-                                                "msg"         : msg,
-                                                "avatar"      : userName.substring(0,2).toUpperCase(),
-                                                "username"    : userName,
-                                                "current_usr" : this.options.currentUser === userName ? "current-usr" : ""
-                                            }
-                                        );
+        rowtemplate = compileTemplate.call(this,
+            "chatRow", {
+                "msg"        : msg,
+                "avatar"     : userName.substring(0, 2).toUpperCase(),
+                "username"   : userName,
+                "current_usr": this.options.currentUser === userName ? "current-usr" : ""
+            }
+        );
 
         rowtemplate = $(rowtemplate);
 
@@ -196,10 +180,11 @@
             .find(".ch-thread-cont")
             .scrollTop(
                 this.container
-                    .find(".ch-thread-cont")
-                    .get(0)
-                    .scrollHeight
-                );
+                .find(".ch-thread-cont")
+                .get(0)
+                .scrollHeight
+            );
+
     };
 
     var rmSimpleLogin = function rmSimpleLogin(){
@@ -209,19 +194,18 @@
     };
 
     var typeInfo = function typeInfo(msg, user, action, delayRemove){
-            var userName   = user || this.options.currentUser,
-                rowtemplate;
+        var userName = user || this.options.currentUser,
+            rowtemplate;
 
-        if(action === "show"){
+        if (action === "show") {
 
             rowtemplate = compileTemplate.call(
-                                            this,
-                                            "typingInfo",
-                                            {
-                                                "msg"         : user + " " + msg,
-                                                "usr"         : user
-                                            }
-                                        );
+                this,
+                "typingInfo", {
+                    "msg": user + " " + msg,
+                    "usr": user
+                }
+            );
 
             this.container.find(".ch-ty-row.ty-" + user).remove();
             this.container.find(".ch-thread-cont").append(rowtemplate);
@@ -229,45 +213,46 @@
         } else {
             this.container.find(".ch-ty-row.ty-" + user).delay(delayRemove).remove();
         }
+
     };
 
     var userLeftJoin = function userLeftJoin(msg, user, type){
         var rowtemplate,
-            userName    =  user || this.options.currentUser;
+            userName = user || this.options.currentUser;
 
-        if (this.options.showLeftNotefication === true && type === "LEFT"){
+        if (this.options.showLeftNotefication === true && type === "LEFT") {
             rowtemplate = "userLeftNot";
         }
-        if (this.options.showJoinNotefication === true && type === "JOIN"){
+        if (this.options.showJoinNotefication === true && type === "JOIN") {
             rowtemplate = "userJoinNot";
         }
 
-        if (rowtemplate !== undefined){
+        if (rowtemplate !== undefined) {
 
             rowtemplate = compileTemplate.call(
-                                            this,
-                                            rowtemplate,
-                                            {
-                                                "msg"         : user + " " + msg,
-                                                "usr"         : user
-                                            }
-                                        );
+                this,
+                rowtemplate, {
+                    "msg": user + " " + msg,
+                    "usr": user
+                }
+            );
 
             this.container.find(".ch-thread-cont").append(rowtemplate);
         }
+
     };
 
     var setEvents = function setEvents(){
         var typingTimer,
             typingInterval = 500,
-            typingTimeOut = function(){
-                                this.socket.emit("STOP.TYPING");
-                                typeInfo.call(this, "", null, "hide", 0);
-                            }.bind(this);
+            typingTimeOut = function() {
+                this.socket.emit("STOP.TYPING");
+                typeInfo.call(this, "", null, "hide", 0);
+            }.bind(this);
 
         xDebug.call(this, arguments.callee.name, arguments);
 
-        this.container.on("keydown", ".ch-input", function(e){
+        this.container.on("keydown", ".ch-input", function(e) {
             var msg;
             if (e.keyCode === 13) {
                 msg = $(e.currentTarget).val();
@@ -279,25 +264,25 @@
 
                 return false;
 
-            }else if(e.keyCode === 9){
+            } else if (e.keyCode === 9) {
                 this.socket.emit("STOP.TYPING");
-            }else{
+            } else {
                 this.socket.emit("TYPING");
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(typingTimeOut, typingInterval);
             }
+
         }.bind(this));
 
-        this.container.on("keydown", ".username", function(e){
+        this.container.on("keydown", ".username", function(e) {
             var username = $(e.target).val();
             if (e.keyCode === 13) {
-                if (username !== ""){
+                if (username !== "") {
                     this.options.currentUser = username;
-                    debugger;
-                    if (this.options.public === true){
-                        this.socket.emit("PUBLIC", {username:this.options.currentUser});
+                    if (this.options.public === true) {
+                        this.socket.emit("PUBLIC", { username: this.options.currentUser });
                     } else {
-                        this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
+                        this.socket.emit("SET.ROOM", { room: this.options.room, username: this.options.currentUser });
                     }
 
                     rmSimpleLogin.call(this);
@@ -313,20 +298,21 @@
             }
         }.bind(this));
 
-        this.parent.on("click", ".btn-invite", function(e){
-            this.linkDialog.dialog({width:500, height:90}).show();
+        this.parent.on("click", ".btn-invite", function(e) {
+            this.linkDialog.dialog({ width: 500, height: 90 }).show();
             e.preventDefault();
             return false;
         }.bind(this));
 
         if (this.parent.hasClass("right-col") === true) {
             // reg. resize event
-            $(window).resize(function(){
+            $(window).resize(function() {
                 intervalFlag.call(
                     this, setChatContHeight, "isRendered", 500
                 );
             }.bind(this));
         }
+
     };
 
     var setApxItemVal = function setApxItemVal(val){
@@ -349,21 +335,22 @@
                 data     : params,
                 dateType : 'application/json',
                 async    : true
-            }).done(function(data){
+            }).done(function(data) {
                 xDebug.call(this, arguments.callee.name, arguments);
-              }.bind(this))
-               .fail(function(data) {
-                alert( "error : " || data );
-              }.bind(this));
+            }.bind(this))
+            .fail(function(data) {
+                alert("error : " || data);
+            }.bind(this));
+
     }
 
     var setSocketEvents = function setSocketEvents() {
         xDebug.call(this, arguments.callee.name, arguments);
 
-        this.socket.on("ROOM.NAME", function (room) {
+        this.socket.on("ROOM.NAME", function(room) {
             xDebug.call(this, arguments.callee.name, arguments);
 
-            if (this.options.room === null && this.options.public === false){
+            if (this.options.room === null && this.options.public === false) {
                 this.options.room = room;
                 this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", room);
                 setInviteButton.call(this);
@@ -372,52 +359,53 @@
 
         }.bind(this));
 
-        this.socket.on("NEW.MESSAGE", function (data) {
+        this.socket.on("NEW.MESSAGE", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
                 addMessageElement.call(this, data.message, data.username);
             }
         }.bind(this));
 
-        this.socket.on("TYPING", function (data) {
+        this.socket.on("TYPING", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "is typing..", data.username, "show");
             }
         }.bind(this));
 
-        this.socket.on("STOP.TYPING", function (data) {
+        this.socket.on("STOP.TYPING", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
             }
         }.bind(this));
 
-        this.socket.on("USER.JOINED", function (data){
+        this.socket.on("USER.JOINED", function(data) {
             if (this.options.currentUser !== null) {
                 userLeftJoin.call(this, lang.notUserJoin, data.username, "JOIN", 0);
             }
         }.bind(this));
 
-        this.socket.on("USER.LEFT", function (data){
+        this.socket.on("USER.LEFT", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
                 userLeftJoin.call(this, lang.notUserLeft, data.username, "LEFT", 0);
             }
         }.bind(this));
 
-        if ( this.options.room        !== null ){
+        if (this.options.room !== null) {
             this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", this.options.room);
             setInviteButton.call(this);
             setApxItemVal.call(this, this.options.room);
 
             if (this.options.currentUser !== null) {
-                this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
+                this.socket.emit("SET.ROOM", { room: this.options.room, username: this.options.currentUser });
             }
         }
-        console.log(this.options.public);
-        if (this.options.public === true){
-            this.socket.emit("PUBLIC", {username:this.options.currentUser});
+
+        if (this.options.public === true) {
+            this.socket.emit("PUBLIC", { username: this.options.currentUser });
             this.options.room = null;
         }
+
     };
 
     var setDom = function setDom(){
@@ -425,19 +413,15 @@
 
         this.container
             .append(compileTemplate.call(
-                        this,
-                        "chatThreadContainer",
-                        {}
-                    )
-            );
+                this,
+                "chatThreadContainer", {}
+            ));
 
         this.container
             .append(compileTemplate.call(
-                        this,
-                        "chatInput",
-                        {}
-                    )
-            );
+                this,
+                "chatInput", {}
+            ));
 
         if (this.options.currentUser === null ||
             anonymous_user.indexOf(this.options.currentUser.toUpperCase()) > -1) {
@@ -446,8 +430,7 @@
                 .append(
                     compileTemplate.call(
                         this,
-                        "loginOverlay",
-                        {}
+                        "loginOverlay", {}
                     )
                 );
 
@@ -468,27 +451,26 @@
     };
 
     var setInviteButton = function setInviteButton(){
-        var buttonTemplate,dlgTemplate;
+        var buttonTemplate, dlgTemplate;
 
-            dlgTemplate = compileTemplate.call(
-                                            this,
-                                            "linkDialog",
-                                            {"link" : this.options.apxChatRoomUrl}
-                                        );
+        dlgTemplate = compileTemplate.call(
+            this,
+            "linkDialog", { "link": this.options.apxChatRoomUrl }
+        );
 
-            buttonTemplate = compileTemplate.call(
-                                            this,
-                                            "buttonTemplate",
-                                            {}
-                                        );
+        buttonTemplate = compileTemplate.call(
+            this,
+            "buttonTemplate", {}
+        );
 
-        if (this.options.room !== null){
+        if (this.options.room !== null) {
             this.parent.find(".t-Region-headerItems--buttons").prepend(buttonTemplate);
         }
 
         this.linkDialog = $(dlgTemplate);
 
         $("body").append(dlgTemplate);
+
     }
 
     apex.plugins.apexChat = function(opts) {
@@ -500,7 +482,6 @@
         this.linkDialog = null;
         this.isRendered = false;
         this.init  = function(){
-
             if (window.io === undefined || $.isFunction(io.Socket) === false) {
                 throw this.jsName || ": requires socket.io (https://github.com/socketio/socket.io)";
             }
@@ -509,7 +490,7 @@
                 throw this.jsName || ": requires handlebars.js (http://handlebarsjs.com/)";
             }
 
-            if ($.type(opts) ===  "string") {
+            if ($.type(opts) === "string") {
                 opts = JSON.parse(opts);
             }
 
@@ -531,6 +512,7 @@
             setDom.call(this);
 
             return this;
+
         };
 
         return this.init();
