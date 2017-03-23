@@ -34,6 +34,7 @@
         apxChatRoomUrl       : null,
         apxRoomItemVal       : null,
         ajaxIdentifier       : null,
+        public               : false,
         showLeftNotefication : true,
         showJoinNotefication : true,
         htmlTemplate         : {
@@ -99,19 +100,19 @@
      * @param  {[type]} timer        [timer, def. 200]
      */
     var intervalFlag = function  intervalFlag(fnIntervat, flagForClear, timer){
-      var interval;
+        var interval;
 
-      xDebug.call(this, arguments.callee.name, arguments);
+        xDebug.call(this, arguments.callee.name, arguments);
 
-      this[flagForClear] = false;
+        this[flagForClear] = false;
 
-      interval = setInterval(function(){
-                    fnIntervat.call(this);
+        interval = setInterval(function() {
+            fnIntervat.call(this);
 
-                    if (this[flagForClear]){
-                      clearInterval(interval);
-                    }
-                  }.bind(this), (timer || 200));
+            if (this[flagForClear]) {
+                clearInterval(interval);
+            }
+        }.bind(this), (timer || 200));
     };
 
     var getMessage = function getMessage(code){
@@ -130,8 +131,6 @@
         data = $.extend({}, data, {"lang":lang});
 
         template = template(data);
-
-
         return template;
     }
 
@@ -294,7 +293,13 @@
             if (e.keyCode === 13) {
                 if (username !== ""){
                     this.options.currentUser = username;
-                    this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
+                    debugger;
+                    if (this.options.public === true){
+                        this.socket.emit("PUBLIC", {username:this.options.currentUser});
+                    } else {
+                        this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
+                    }
+
                     rmSimpleLogin.call(this);
                     setApxItemVal.call(this, this.options.room);
 
@@ -358,7 +363,7 @@
         this.socket.on("ROOM.NAME", function (room) {
             xDebug.call(this, arguments.callee.name, arguments);
 
-            if (this.options.room === null){
+            if (this.options.room === null && this.options.public === false){
                 this.options.room = room;
                 this.options.apxChatRoomUrl = this.options.apxChatRoomUrl.replace("#roomid#", room);
                 setInviteButton.call(this);
@@ -388,14 +393,14 @@
 
         this.socket.on("USER.JOINED", function (data){
             if (this.options.currentUser !== null) {
-                userLeftJoin.call(this, "has joined your channel...", data.username, "JOIN", 0);
+                userLeftJoin.call(this, lang.notUserJoin, data.username, "JOIN", 0);
             }
         }.bind(this));
 
         this.socket.on("USER.LEFT", function (data){
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
-                userLeftJoin.call(this, "has left your channel...", data.username, "LEFT", 0);
+                userLeftJoin.call(this, lang.notUserLeft, data.username, "LEFT", 0);
             }
         }.bind(this));
 
@@ -407,6 +412,11 @@
             if (this.options.currentUser !== null) {
                 this.socket.emit("SET.ROOM", {room : this.options.room, username:this.options.currentUser});
             }
+        }
+        console.log(this.options.public);
+        if (this.options.public === true){
+            this.socket.emit("PUBLIC", {username:this.options.currentUser});
+            this.options.room = null;
         }
     };
 
