@@ -73,7 +73,7 @@
     };
 
     /**
-     * [xDebug - PRIVATE function for debug]
+     * [xDebug PRIVATE function for debug]
      * @param  string   functionName  caller function
      * @param  array    params        caller arguments
      */
@@ -82,7 +82,7 @@
     };
 
     /**
-     * [triggerEvent     - PRIVATE handler fn - trigger apex events]
+     * [triggerEvent PRIVATE handler fn - trigger apex events]
      * @param String evt - apex event name to trigger
      */
     var triggerEvent = function triggerEvent(evt, evtData) {
@@ -92,10 +92,10 @@
     };
 
      /**
-     * [intervalFlag call passed function repeatedly "fnIntervat", stop only when flagForClear is set to true ]
-     * @param  {[type]} fnIntervat   [function for repeatedly call]
-     * @param  {[type]} flagForClear [key prop. on this scope]
-     * @param  {[type]} timer        [timer, def. 200]
+     * [intervalFlag PRIVATE call passed function repeatedly "fnIntervat", stop only when flagForClear is set to true ]
+     * @param  function fnIntervat   function for repeatedly call
+     * @param  property flagForClear key prop. on this scope
+     * @param  number   timer        timer, def. 200
      */
     var intervalFlag = function  intervalFlag(fnIntervat, flagForClear, timer){
         var interval;
@@ -114,6 +114,11 @@
 
     };
 
+    /**
+     * [getMessage PRIVATE get message from apex.lang api, if apex.lang returns text that is the same sa code, return undefined]
+     * @param  string code apex.lang.code
+     * @return string      translate
+     */
     var getMessage = function getMessage(code){
         var ret = apex.lang.getMessage(code);
         if (ret === code) {
@@ -123,6 +128,12 @@
 
     };
 
+    /**
+     * [compileTemplate PRIVATE compile template with data/lang]
+     * @param  string templateName [template property name options.htmlTemplate ]
+     * @param  object data         [object data used for compile]
+     * @return object template     [compiled template]
+     */
     var compileTemplate = function compileTemplate (templateName, data){
         var template = this.options.htmlTemplate[templateName],
             data;
@@ -134,8 +145,11 @@
         template = template(data);
         return template;
 
-    }
+    };
 
+    /**
+     * [setChatContHeight PRIVATE when ".ch-thread-cont" is visible, set it's heght ]
+     */
     var setChatContHeight = function setChatContHeight(){
         var el = this.container
             .find(".ch-thread-cont")
@@ -158,6 +172,11 @@
 
     };
 
+    /**
+     * [addMessageElement PRIVATE add message to .ch-thread-cont]
+     * @param string msg  [message]
+     * @param string user [username]
+     */
     var addMessageElement = function addMessageElement (msg, user){
         var userName = user || this.options.currentUser,
             rowtemplate;
@@ -187,12 +206,22 @@
 
     };
 
+    /**
+     * [rmSimpleLogin PRIVATE remove simple login]
+     */
     var rmSimpleLogin = function rmSimpleLogin(){
         this.container.find(".ch-login").remove();
         this.container.find(".ch-input-cont").show();
         this.container.find(".ch-thread-cont").show();
     };
 
+    /**
+     * [typeInfo PRIVATE show type information]
+     * @param  string  msg         [message]
+     * @param  string  user        [username]
+     * @param  string  action      [string "show"/"hide"]
+     * @param  integer delayRemove [timer for autoremove]
+     */
     var typeInfo = function typeInfo(msg, user, action, delayRemove){
         var userName = user || this.options.currentUser,
             rowtemplate;
@@ -216,6 +245,12 @@
 
     };
 
+    /**
+     * [userLeftJoin PRIVATE show info. when user "left"/"join" chat room]
+     * @param  string  msg         [message]
+     * @param  string  user        [username]
+     * @param  string  action      [string "LEFT"/"JOIN"]
+     */
     var userLeftJoin = function userLeftJoin(msg, user, type){
         var rowtemplate,
             userName = user || this.options.currentUser;
@@ -242,11 +277,14 @@
 
     };
 
+    /**
+     * [setEvents PRIVATE DOM event mapping]
+     */
     var setEvents = function setEvents(){
         var typingTimer,
             typingInterval = 500,
             typingTimeOut = function() {
-                this.socket.emit("STOP.TYPING");
+                this.socket.emit("stop.typing");
                 typeInfo.call(this, "", null, "hide", 0);
             }.bind(this);
 
@@ -258,8 +296,8 @@
                 msg = $(e.currentTarget).val();
                 $(e.currentTarget).val("");
                 addMessageElement.call(this, msg);
-                this.socket.emit("NEW.MESSAGE", msg);
-                this.socket.emit("STOP.TYPING");
+                this.socket.emit("new.message", msg);
+                this.socket.emit("stop.typing");
                 typeInfo.call(this, "", null, "hide", 0);
 
                 return false;
@@ -280,9 +318,9 @@
                 if (username !== "") {
                     this.options.currentUser = username;
                     if (this.options.public === true) {
-                        this.socket.emit("PUBLIC", { username: this.options.currentUser });
+                        this.socket.emit("public", { username: this.options.currentUser });
                     } else {
-                        this.socket.emit("SET.ROOM", { room: this.options.room, username: this.options.currentUser });
+                        this.socket.emit("set.room", { room: this.options.room, username: this.options.currentUser });
                     }
 
                     rmSimpleLogin.call(this);
@@ -315,6 +353,10 @@
 
     };
 
+    /**
+     * [setApxItemVal PRIVATE set apex item value on backend]
+     * @param string val [value]
+     */
     var setApxItemVal = function setApxItemVal(val){
         var params;
 
@@ -342,12 +384,15 @@
                 alert("error : " || data);
             }.bind(this));
 
-    }
+    };
 
+    /**
+     * [setSocketEvents PRIVATE set socket.io event handling]
+     */
     var setSocketEvents = function setSocketEvents() {
         xDebug.call(this, arguments.callee.name, arguments);
 
-        this.socket.on("ROOM.NAME", function(room) {
+        this.socket.on("room.name", function(room) {
             xDebug.call(this, arguments.callee.name, arguments);
 
             if (this.options.room === null && this.options.public === false) {
@@ -359,32 +404,32 @@
 
         }.bind(this));
 
-        this.socket.on("NEW.MESSAGE", function(data) {
+        this.socket.on("new.message", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
                 addMessageElement.call(this, data.message, data.username);
             }
         }.bind(this));
 
-        this.socket.on("TYPING", function(data) {
+        this.socket.on("typing", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "is typing..", data.username, "show");
             }
         }.bind(this));
 
-        this.socket.on("STOP.TYPING", function(data) {
+        this.socket.on("stop.typing", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
             }
         }.bind(this));
 
-        this.socket.on("USER.JOINED", function(data) {
+        this.socket.on("user.joined", function(data) {
             if (this.options.currentUser !== null) {
                 userLeftJoin.call(this, lang.notUserJoin, data.username, "JOIN", 0);
             }
         }.bind(this));
 
-        this.socket.on("USER.LEFT", function(data) {
+        this.socket.on("user.left", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
                 userLeftJoin.call(this, lang.notUserLeft, data.username, "LEFT", 0);
@@ -397,17 +442,20 @@
             setApxItemVal.call(this, this.options.room);
 
             if (this.options.currentUser !== null) {
-                this.socket.emit("SET.ROOM", { room: this.options.room, username: this.options.currentUser });
+                this.socket.emit("set.room", { room: this.options.room, username: this.options.currentUser });
             }
         }
 
         if (this.options.public === true) {
-            this.socket.emit("PUBLIC", { username: this.options.currentUser });
+            this.socket.emit("public", { username: this.options.currentUser });
             this.options.room = null;
         }
 
     };
 
+    /**
+     * [setDom PRIVATE set DOM]
+     */
     var setDom = function setDom(){
         xDebug.call(this, arguments.callee.name, arguments);
 
@@ -450,6 +498,9 @@
 
     };
 
+    /**
+     * [setInviteButton PRIVATE set invite button]
+     */
     var setInviteButton = function setInviteButton(){
         var buttonTemplate, dlgTemplate;
 
