@@ -14,10 +14,11 @@
     const socketio = require('socket.io');
     const winston = require('winston');
     const mkdirp = require('mkdirp');
+    const ip = require("ip");
+    const pjson = require('./package.json');
 
-    const server_port = 5050;
-    //const server_ip_address = '10.73.222.109';
-    const server_ip_address = 'playground';
+    const server_port = pjson.port;
+    const server_ip_address = pjson.server || ip.address();
 
 
     var app       = express();
@@ -56,7 +57,7 @@
       socket.room = "room-" + Math.round(new Date().getTime()/1000);
       socket.join(socket.room);
 
-      socket.emit("ROOM.NAME", socket.room);
+      socket.emit("room.name", socket.room);
       wiLogger.log("info","emit room name..." + socket.room);
 
 
@@ -71,17 +72,17 @@
         }
       }
 
-      socket.on("NEW.MESSAGE", function (data) {
+      socket.on("new.message", function (data) {
         wiLogger.log("info","new message... " + data);
 
-        emit("NEW.MESSAGE", {
+        emit("new.message", {
           username: socket.username,
           message: data
         });
 
       });
 
-      socket.on("SET.ROOM", function(data) {
+      socket.on("set.room", function(data) {
         if(data.room === null || data.room === undefined){
            return;
         }
@@ -102,30 +103,34 @@
         wiLogger.log("info", "added to room..." + socket.room);
 
         if (socket.username !== undefined){
-          emit("USER.JOINED", {
+          emit("user.joined", {
             username: socket.username
           });
         }
 
       });
 
-      socket.on("PUBLIC", function() {
-        wiLogger.log("info", "public.." + room);
+      socket.on("public", function(data) {
+        wiLogger.log("info", "public....");
 
         if(socket.room !== undefined){
           socket.leave(socket.room);
           socket.room = undefined;
         }
 
+        if (data.username !== null && data.username !== undefined){
+          wiLogger.log("info", "add user to public chat " + data.username);
+          socket.username = data.username;
+        }
+
         if (socket.username !== undefined){
-          emit("USER.JOINED", {
+          emit("user.joined", {
             username: socket.username
           });
         }
       });
 
-
-      socket.on("ADD.USER", function (data) {
+      socket.on("add.user", function (data) {
 
         if (data.username === null || data.username === undefined){
           return;
@@ -134,26 +139,26 @@
         wiLogger.log("info", "add user " + data.username);
         socket.username = data.username;
 
-        emit("USER.JOINED", {
+        emit("user.joined", {
           username: socket.username
         });
 
       });
 
-      socket.on("TYPING", function () {
+      socket.on("typing", function () {
         wiLogger.log("info", socket.username + " is typing...");
 
         if (socket.username !== undefined){
-          emit("TYPING", {
+          emit("typing", {
             username: socket.username
           });
         }
       });
 
-      socket.on("STOP.TYPING", function () {
+      socket.on("stop.typing", function () {
 
         if (socket.username !== undefined){
-          emit("STOP.TYPING", {
+          emit("stop.typing", {
             username: socket.username
           });
         }
@@ -161,7 +166,7 @@
 
       socket.on("disconnect", function () {
         if (socket.username !== undefined){
-          emit("USER.LEFT", {
+          emit("user.left", {
             username: socket.username
           });
         }

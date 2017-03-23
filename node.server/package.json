@@ -4,13 +4,16 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "chat.js"
   },
+  "port" : "5050",
+  "server" : "playground",
   "author": "isabolic (sabolic.ivan@gmail.com)",
   "license": "MIT",
   "dependencies": {
     "express": "^4.15.0",
     "http": "0.0.0",
+    "ip": "^1.1.5",
     "mkdir": "0.0.2",
     "mkdirp": "^0.5.1",
     "socket.io": "^1.7.3",
