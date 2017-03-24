@@ -22,7 +22,7 @@
      * [anonymous_user constants]
      * @type {String}
      */
-    var anonymous_user = ["ANONYMOUS", "NOBODY"];
+    var anonymous_user = ["ANONYMOUS", "NOBODY", "APEX_PUBLIC_USER"];
 
     var options = {
         socketServer         : null,
