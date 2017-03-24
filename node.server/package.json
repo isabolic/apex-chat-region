@@ -2,9 +2,9 @@
   "name": "apex.chat.module",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "chat.js",
   "scripts": {
-    "start": "chat.js"
+    "start": "node chat.js"
   },
   "port" : "5050",
   "server" : "playground",
