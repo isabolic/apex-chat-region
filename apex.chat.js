@@ -303,9 +303,9 @@
                 return false;
 
             } else if (e.keyCode === 9) {
-                this.socket.emit("STOP.TYPING");
+                this.socket.emit("stop.typing");
             } else {
-                this.socket.emit("TYPING");
+                this.socket.emit("typing");
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(typingTimeOut, typingInterval);
             }
