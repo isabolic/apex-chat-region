@@ -45,4 +45,6 @@ from **build** directory:
 
 [Apex chat](https://apex.oracle.com/pls/apex/f?p=101959:16 "Apex chat homepage")
 
+## More info
+The blog post for more technical detail can be found [here](https://goo.gl/3jcE2R).
 
