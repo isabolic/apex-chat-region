@@ -138,6 +138,10 @@
         var template = this.options.htmlTemplate[templateName],
             data;
 
+        if (data.usr !== undefined){
+            data.usr = getUserClass.call(this, data.usr);
+        }
+
         template = Handlebars.compile(template);
 
         data = $.extend({}, data, { "lang": lang });
@@ -214,6 +218,14 @@
         this.container.find(".ch-input-cont").show();
         this.container.find(".ch-thread-cont").show();
     };
+    /**
+     * [getUserClass PRIVATE return username class]
+     * @param  {String} usr [username]
+     * @return {String}     [classname]
+     */
+    var getUserClass = function getUserClass(usr){
+        return usr.replace(" ", "_");
+    }
 
     /**
      * [typeInfo PRIVATE show type information]
@@ -226,6 +238,7 @@
         var userName = user || this.options.currentUser,
             rowtemplate;
 
+
         if (action === "show") {
 
             rowtemplate = compileTemplate.call(
@@ -236,11 +249,11 @@
                 }
             );
 
-            this.container.find(".ch-ty-row.ty-" + user).remove();
+            this.container.find(".ch-ty-row.ty-" + getUserClass.call(this, user)).remove();
             this.container.find(".ch-thread-cont").append(rowtemplate);
 
         } else {
-            this.container.find(".ch-ty-row.ty-" + user).delay(delayRemove).remove();
+            this.container.find(".ch-ty-row.ty-" + getUserClass.call(this, user)).delay(delayRemove).remove();
         }
 
     };
@@ -282,7 +295,7 @@
      */
     var setEvents = function setEvents(){
         var typingTimer,
-            typingInterval = 500,
+            typingInterval = 1000,
             typingTimeOut = function() {
                 this.socket.emit("stop.typing");
                 typeInfo.call(this, "", null, "hide", 0);
