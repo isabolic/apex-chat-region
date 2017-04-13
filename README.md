@@ -31,12 +31,13 @@ from **build** directory:
 6) inside terminal navigate into copied node.server directory and run 
    ```bash
    npm run
-   ```
+   ```   
+   
 ## Plugin Settings
 ### How to
 1) Create a Region on your apex page 
 - [X] set **Type**: apexChat.io[Plug-in]
-- [X] set **socket server**: http or https link to your node.js server
+- [X] set **socket server**: http or https link to your node.js server (when you run command "npm run" it will output server ip address or hostname with port. For example **"Listening on playground, server_port 8080"** then socket server link is http://playground:8080) 
 - [X] set **Chat room item**: apex item on page (or application item) in witch is stored chat room id 
 - [X] set **Public chat**: "Yes"/"No" - option witch defines how chat region behaves, if public all chat messages are visible to everyone, private when someone enter chatroom auto creates room and then generate link where you can send invitations for chat.
 
