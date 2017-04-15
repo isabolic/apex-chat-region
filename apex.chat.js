@@ -224,7 +224,13 @@
      * @return {String}     [classname]
      */
     var getUserClass = function getUserClass(usr){
-        return usr.replace(" ", "_");
+        var retClass;
+
+        if (jQuery.type(usr) === "string"){
+            retClass = usr.replace(new RegExp(" ", 'g'), "_");
+        }
+
+        return  retClass;
     }
 
     /**
@@ -244,16 +250,16 @@
             rowtemplate = compileTemplate.call(
                 this,
                 "typingInfo", {
-                    "msg": user + " " + msg,
-                    "usr": user
+                    "msg": userName + " " + msg,
+                    "usr": getUserClass.call(this, userName)
                 }
             );
 
-            this.container.find(".ch-ty-row.ty-" + getUserClass.call(this, user)).remove();
+            this.container.find(".ch-ty-row.ty-" + getUserClass.call(this, userName)).remove();
             this.container.find(".ch-thread-cont").append(rowtemplate);
 
         } else {
-            this.container.find(".ch-ty-row.ty-" + getUserClass.call(this, user)).delay(delayRemove).remove();
+            this.container.find(".ch-ty-row.ty-" + getUserClass.call(this, userName)).delay(delayRemove).remove();
         }
 
     };
