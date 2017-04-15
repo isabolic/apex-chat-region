@@ -30,7 +30,7 @@ from **build** directory:
    ```
 6) inside terminal navigate into copied node.server directory and run
    ```bash
-   node chat.js
+   node chat.js &
    ```
 
 ## Plugin Settings
