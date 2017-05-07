@@ -172,7 +172,7 @@
     margin-left: 1000px;
     background-color: rgba(130, 124, 212, 0.48);
     color: rgb(247, 247, 247);
-    height: 20px;
+    height: 25px;
     -webkit-transition: background-color 1900ms linear;
     -ms-transition: background-color 1900ms linear;
     transition: background-color 1900ms linear;

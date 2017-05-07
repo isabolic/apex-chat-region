@@ -28,26 +28,21 @@ end;
 prompt --application/shared_components/plugins/region_type/apex_socket_chat_room
 begin
 wwv_flow_api.create_plugin(
- p_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22525968312821439)
 ,p_plugin_type=>'REGION TYPE'
 ,p_name=>'APEX.SOCKET.CHAT.ROOM'
 ,p_display_name=>'apexChat.io'
 ,p_supported_ui_types=>'DESKTOP:JQM_SMARTPHONE'
-,p_javascript_file_urls=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
-'http://playground/ws/apex.chat.js',
-'http://playground/ws/libs/socket.io/socket.io.js',
-'http://playground/ws/libs/handlebars-v4.0.5.js'))
-,p_css_file_urls=>'http://playground/ws/apex.chat.css'
 ,p_render_function=>'ax_plg_socket_chat.chat_region_render'
 ,p_ajax_function=>'ax_plg_socket_chat.chat_region_ajax'
 ,p_substitute_attributes=>true
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.0.0'
-,p_files_version=>23
+,p_files_version=>20
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(22529667970498712)
-,p_plugin_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22531582074739923)
+,p_plugin_id=>wwv_flow_api.id(22525968312821439)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>1
 ,p_display_sequence=>10
@@ -57,8 +52,8 @@ wwv_flow_api.create_plugin_attribute(
 ,p_is_translatable=>false
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(22547039020333121)
-,p_plugin_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22548953124574332)
+,p_plugin_id=>wwv_flow_api.id(22525968312821439)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>2
 ,p_display_sequence=>20
@@ -69,8 +64,8 @@ wwv_flow_api.create_plugin_attribute(
 ,p_is_translatable=>false
 );
 wwv_flow_api.create_plugin_attribute(
- p_id=>wwv_flow_api.id(22582430136643166)
-,p_plugin_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22584344240884377)
+,p_plugin_id=>wwv_flow_api.id(22525968312821439)
 ,p_attribute_scope=>'COMPONENT'
 ,p_attribute_sequence=>3
 ,p_display_sequence=>30
@@ -1690,8 +1685,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(22526647542921700)
-,p_plugin_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22528561647162911)
+,p_plugin_id=>wwv_flow_api.id(22525968312821439)
 ,p_file_name=>'handlebars-v4.0.5.js'
 ,p_mime_type=>'text/javascript'
 ,p_file_charset=>'utf-8'
@@ -3813,8 +3808,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(22527110241922549)
-,p_plugin_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22529024346163760)
+,p_plugin_id=>wwv_flow_api.id(22525968312821439)
 ,p_file_name=>'socket.io.js'
 ,p_mime_type=>'text/javascript'
 ,p_file_charset=>'utf-8'
@@ -3861,7 +3856,7 @@ wwv_flow_api.g_varchar2_table(34) := '723B0A202020202D6D732D7472616E736974696F6E
 wwv_flow_api.g_varchar2_table(35) := '2D757365722D6C6973742D77726170202E63682D757365722D6C697374206C692E707265702D6164643A66697273742D6368696C647B0A2020202070616464696E672D746F703A203570783B0A202020206D617267696E2D746F703A202D3570783B0A7D';
 wwv_flow_api.g_varchar2_table(36) := '0A2E6170782D636861742D726567202E63682D757365722D6C6973742D77726170202E63682D757365722D6C697374206C692E707265702D6164647B0A202020206D617267696E2D6C6566743A202D313070783B0A202020206D617267696E2D72696768';
 wwv_flow_api.g_varchar2_table(37) := '743A202D313070783B0A2020202070616464696E673A20307078203570783B0A202020206D617267696E2D6C6566743A203130303070783B0A202020206261636B67726F756E642D636F6C6F723A2072676261283133302C203132342C203231322C2030';
-wwv_flow_api.g_varchar2_table(38) := '2E3438293B0A20202020636F6C6F723A20726762283234372C203234372C20323437293B0A202020206865696768743A20323070783B0A202020202D7765626B69742D7472616E736974696F6E3A206261636B67726F756E642D636F6C6F722031393030';
+wwv_flow_api.g_varchar2_table(38) := '2E3438293B0A20202020636F6C6F723A20726762283234372C203234372C20323437293B0A202020206865696768743A20323570783B0A202020202D7765626B69742D7472616E736974696F6E3A206261636B67726F756E642D636F6C6F722031393030';
 wwv_flow_api.g_varchar2_table(39) := '6D73206C696E6561723B0A202020202D6D732D7472616E736974696F6E3A206261636B67726F756E642D636F6C6F7220313930306D73206C696E6561723B0A202020207472616E736974696F6E3A206261636B67726F756E642D636F6C6F722031393030';
 wwv_flow_api.g_varchar2_table(40) := '6D73206C696E6561723B0A202020202D7765626B69742D7472616E736974696F6E3A20636F6C6F7220313930306D73206C696E6561723B0A202020202D6D732D7472616E736974696F6E3A20636F6C6F7220313930306D73206C696E6561723B0A202020';
 wwv_flow_api.g_varchar2_table(41) := '207472616E736974696F6E3A20636F6C6F7220313930306D73206C696E6561723B0A7D0A0A2E63682D7468726561642D636F6E747B0A20202020646973706C61793A20696E6C696E652D626C6F636B3B0A202020206F766572666C6F773A206175746F3B';
@@ -3887,8 +3882,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(22583714784794879)
-,p_plugin_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22585628889036090)
+,p_plugin_id=>wwv_flow_api.id(22525968312821439)
 ,p_file_name=>'apex.chat.css'
 ,p_mime_type=>'text/css'
 ,p_file_charset=>'utf-8'
@@ -4165,8 +4160,8 @@ end;
 /
 begin
 wwv_flow_api.create_plugin_file(
- p_id=>wwv_flow_api.id(22584117798795381)
-,p_plugin_id=>wwv_flow_api.id(22524054208580228)
+ p_id=>wwv_flow_api.id(22586031903036592)
+,p_plugin_id=>wwv_flow_api.id(22525968312821439)
 ,p_file_name=>'apex.chat.js'
 ,p_mime_type=>'text/javascript'
 ,p_file_charset=>'utf-8'
