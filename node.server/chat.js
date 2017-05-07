@@ -41,6 +41,8 @@
         ]
     });
 
+    app.use("/public", express.static("public"));
+
     mkdirp("logs", function(err) {
       if (err) {
           wiLogger.log("info","err creating log folder " + err);
