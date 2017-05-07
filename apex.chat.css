@@ -28,12 +28,12 @@
 
 .apx-chat-reg .ch.ch-login{
     text-align: center;
-    background-color: rgb(0, 151, 198);
+    background-color: rgb(255, 255, 255);
     padding: 50px 10px;
 }
 
 .apx-chat-reg h3.title{
-    color: white;
+    color: #2577cf;
     font-weight: bold;
 }
 .invite-dialog input{
@@ -46,12 +46,12 @@
 .apx-chat-reg .username{
     background-color: transparent;
     border: none;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #2577cf;
     outline: none;
     padding-bottom: 15px;
     text-align: center;
     width: 400px;
-    color: #fff;
+    color: #2577cf;
     font-weight: bold;
 }
 
@@ -107,6 +107,9 @@
     border-bottom-left-radius: 6px;
 }
 
+.apx-chat-reg .ch-cont-wrap{
+    display: flex;
+}
 .apx-chat-reg .ch-msg.current-usr{
     background: rgba(41, 161, 212, 0.32);
 }
@@ -119,8 +122,70 @@
     height: 100%;
 }
 
-.ch-thread-cont{
+.apx-chat-reg .ch-user-list-wrap{
+    display: inline-block;
+    width: 30%;
+    border-left: 1px solid #ddd;
+}
+
+.apx-chat-reg .ch-user-list{
+    list-style-type: none;
+    padding: 5px;
+    margin: 0px 5px;
+    height: auto;
+}
+.apx-chat-reg .ch-user-list-wrap nav{
+    display: block;
     overflow: auto;
+    width: 100%;
+    height: 90%;
+    background-color: #d1f7fe;
+}
+
+.apx-chat-reg .ch-user-list-wrap .ch-user-list li{
+    font-size:15px;
+    color: #0e5aad;
+    padding: 0px 5px;
+}
+.apx-chat-reg .ch-user-list-wrap .ch-user-list li.prep-rm{
+    margin-left: -10px;
+    margin-right: -10px;
+    padding: 0px 5px;
+    height: 20px;
+    background-color: rgba(130, 124, 212, 0.48);
+    color: rgb(247, 247, 247);
+    -webkit-transition: background-color 1900ms linear;
+    -ms-transition: background-color 1900ms linear;
+    transition: background-color 1900ms linear;
+    -webkit-transition: color 1900ms linear;
+    -ms-transition: color 1900ms linear;
+    transition: color 1900ms linear;
+}
+.apx-chat-reg .ch-user-list-wrap .ch-user-list li.prep-add:first-child{
+    padding-top: 5px;
+    margin-top: -5px;
+}
+.apx-chat-reg .ch-user-list-wrap .ch-user-list li.prep-add{
+    margin-left: -10px;
+    margin-right: -10px;
+    padding: 0px 5px;
+    margin-left: 1000px;
+    background-color: rgba(130, 124, 212, 0.48);
+    color: rgb(247, 247, 247);
+    height: 20px;
+    -webkit-transition: background-color 1900ms linear;
+    -ms-transition: background-color 1900ms linear;
+    transition: background-color 1900ms linear;
+    -webkit-transition: color 1900ms linear;
+    -ms-transition: color 1900ms linear;
+    transition: color 1900ms linear;
+}
+
+.ch-thread-cont{
+    display: inline-block;
+    overflow: auto;
+    min-height: 300px;
+    width: 70%;
 }
 
 .right-col .apx-chat-reg .username{
@@ -168,6 +233,15 @@ body.t-PageBody.js-rightCollapsed .t-Body-actions {
     font-size: 14px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.apx-chat-reg .user-list-title{
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+    font-weight: 200;
+    height: 10%;
+    margin-bottom: 0px;
 }
 
 .apx-chat-reg .ch-type{

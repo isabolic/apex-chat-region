@@ -36,39 +36,46 @@
         showLeftNotefication : true,
         showJoinNotefication : true,
         htmlTemplate         : {
-            chatThreadContainer : "<div class='ch-thread-cont' style='display:none'>"                                                     +
-                                            "</div>",
-            chatRow             : "<div class='ch-row'>"                                                                                  +
-                                                "<div class='ch-avatar'>{{avatar}}</div>"                                                 +
-                                                "<div class='ch-username'>{{username}}</div>"                                             +
-                                                "<div class='ch-msg {{current_usr}}'>{{msg}}</div>"                                       +
-                                            "</div>",
-            typingInfo          : "<div class='ch-ty-row ty-{{usr}}'>"                                                                    +
-                                                "<div class='ch-type'>{{msg}}</div>"                                                      +
-                                            "</div>",
-            userLeftNot         : "<div class='ch-user-left-row ty-{{usr}}'>"                                                             +
-                                                "<div class='ch-left'>{{msg}}</div>"                                                      +
-                                            "</div>",
-            userJoinNot         : "<div class='ch-user-join-row ty-{{usr}}'>"                                                             +
-                                                "<div class='ch-join'>{{msg}}</div>"                                                      +
-                                            "</div>",
-            loginOverlay        : "<div class='ch ch-login'>"                                                                             +
-                                                "<div class='form'>"                                                                      +
-                                                    "<h3 class='title'>{{lang.chatname}}</h3>"                                            +
-                                                    "<input class='username' type='text' />"                                              +
-                                                "</div>"                                                                                  +
-                                            "</div>",
-            chatInput           : "<div class='ch-input-cont'>"                                                                           +
-                                                "<textarea class='ch-input' placeholder='{{lang.textareaPlaceholder}}'></textarea>"       +
-                                            "<div>",
-            buttonTemplate      : "<button class='t-Button t-Button--icon t-Button--iconLeft t-Button--hot btn-invite' type='button'>"    +
-                                                "<span class='t-Icon t-Icon--left fa fa-link' aria-hidden='true'></span>"                 +
-                                                "<span class='t-Button-label'>{{lang.btnLabel}}</span>"                                   +
-                                                "<span class='t-Icon t-Icon--right fa fa-link' aria-hidden='true'></span>"                +
-                                            "</button>",
-            linkDialog          : "<div class='invite-dialog' style='display:none' title='{{lang.linkDlgtitle}}'>"                        +
-                                                "<input type='text' value='{{link}}'></input>"                                            +
-                                            "</div>"
+            chatThreadContainer  : "<div class='ch-thread-cont' >"                                                                           +
+                                        "</div>",
+            chatRow              : "<div class='ch-row'>"                                                                                  +
+                                                    "<div class='ch-avatar'>{{avatar}}</div>"                                                 +
+                                                    "<div class='ch-username'>{{username}}</div>"                                             +
+                                                    "<div class='ch-msg {{current_usr}}'>{{msg}}</div>"                                       +
+                                                "</div>",
+            typingInfo           : "<div class='ch-ty-row ty-{{usr}}'>"                                                                    +
+                                                    "<div class='ch-type'>{{msg}}</div>"                                                      +
+                                                "</div>",
+            userLeftNot          : "<div class='ch-user-left-row ty-{{usr}}'>"                                                             +
+                                                    "<div class='ch-left'>{{msg}}</div>"                                                      +
+                                                "</div>",
+            userJoinNot          : "<div class='ch-user-join-row ty-{{usr}}'>"                                                             +
+                                                    "<div class='ch-join'>{{msg}}</div>"                                                      +
+                                                "</div>",
+            loginOverlay         : "<div class='ch ch-login'>"                                                                             +
+                                                    "<div class='form'>"                                                                      +
+                                                        "<h3 class='title'>{{lang.chatname}}</h3>"                                            +
+                                                        "<input class='username' type='text' />"                                              +
+                                                    "</div>"                                                                                  +
+                                                "</div>",
+            chatInput            : "<div class='ch-input-cont'>"                                                                           +
+                                                    "<textarea class='ch-input' placeholder='{{lang.textareaPlaceholder}}'></textarea>"       +
+                                                "<div>",
+            buttonTemplate       : "<button class='t-Button t-Button--icon t-Button--iconLeft t-Button--hot btn-invite' type='button'>"       +
+                                                    "<span class='t-Icon t-Icon--left fa fa-link' aria-hidden='true'></span>"                 +
+                                                    "<span class='t-Button-label'>{{lang.btnLabel}}</span>"                                   +
+                                                    "<span class='t-Icon t-Icon--right fa fa-link' aria-hidden='true'></span>"                +
+                                                "</button>",
+            linkDialog           : "<div class='invite-dialog' style='display:none' title='{{lang.linkDlgtitle}}'>"                           +
+                                                    "<input type='text' value='{{link}}'></input>"                                            +
+                                                "</div>",
+            userList             : "<div class='ch-user-list-wrap'>"                                                                          +
+                                        "<h5 class='user-list-title'>{{lang.availableUsers}}</h5>"                                            +
+                                        "<nav><ul class='ch-user-list'></ul></nav>"                                                           +
+                                       "</div>",
+            chatContainer        : "<div class='ch-cont-wrap' style='display:none'>"                                                          +
+                                       "</div>",
+            userliTemplate       : "<li class='ch-user-avl-{{usr}}'><i class='fa fa-user fa-fw' aria-hidden='true'></i> {{usr}}</li>"
         }
     };
 
@@ -155,9 +162,13 @@
      * [setChatContHeight PRIVATE when ".ch-thread-cont" is visible, set it's heght ]
      */
     var setChatContHeight = function setChatContHeight(){
-        var el = this.container
-            .find(".ch-thread-cont")
-        topParent = this.parent.parent();
+        var
+        el        = this.container
+                      .find(".ch-thread-cont"),
+        el2       = this.container
+                      .find(".ch-user-list-wrap"),
+        topParent = this.parent.parent(),
+        height;
 
         xDebug.call(this, arguments.callee.name, arguments);
 
@@ -166,11 +177,13 @@
                 height = topParent.height() -
                     this.parent.find(".t-Region-header").outerHeight(true) -
                     this.container.find(".ch-input-cont").outerHeight(true);
-
-                el.height(height);
             } else {
-                el.height(this.parent.find(".t-Region-body").height() - this.container.find(".ch-input-cont").outerHeight(true));
+                height = this.parent.find(".t-Region-body").height()
+                         - this.container.find(".ch-input-cont").outerHeight(true);
             }
+            el2.height(height);
+            el.height(height);
+
             this.isRendered = true;
         }
 
@@ -203,9 +216,9 @@
             .find(".ch-thread-cont")
             .scrollTop(
                 this.container
-                .find(".ch-thread-cont")
-                .get(0)
-                .scrollHeight
+                    .find(".ch-thread-cont")
+                    .get(0)
+                    .scrollHeight
             );
 
     };
@@ -215,9 +228,10 @@
      */
     var rmSimpleLogin = function rmSimpleLogin(){
         this.container.find(".ch-login").remove();
+        this.container.find(".ch-cont-wrap").show();
         this.container.find(".ch-input-cont").show();
-        this.container.find(".ch-thread-cont").show();
     };
+
     /**
      * [getUserClass PRIVATE return username class]
      * @param  {String} usr [username]
@@ -271,27 +285,84 @@
      * @param  string  action      [string "LEFT"/"JOIN"]
      */
     var userLeftJoin = function userLeftJoin(msg, user, type){
-        var rowtemplate,
+        var rowTemplate,
             userName = user || this.options.currentUser;
 
         if (this.options.showLeftNotefication === true && type === "LEFT") {
-            rowtemplate = "userLeftNot";
+            rowTemplate = "userLeftNot";
         }
         if (this.options.showJoinNotefication === true && type === "JOIN") {
-            rowtemplate = "userJoinNot";
+            rowTemplate = "userJoinNot";
         }
 
-        if (rowtemplate !== undefined) {
+        if (rowTemplate !== undefined) {
 
-            rowtemplate = compileTemplate.call(
+            rowTemplate = compileTemplate.call(
                 this,
-                rowtemplate, {
+                rowTemplate, {
                     "msg": user + " " + msg,
                     "usr": user
                 }
             );
 
-            this.container.find(".ch-thread-cont").append(rowtemplate);
+            this.container.find(".ch-thread-cont").append(rowTemplate);
+        }
+    };
+
+    /**
+     * [userLeftJoinList PRIVATE show info. when user "left"/"join" chat room]
+     * @param  string  msg         [message]
+     * @param  string  user        [username]
+     * @param  string  action      [string "LEFT"/"JOIN"]
+     * @param  number  timer       [timer value for animation]
+     * @param  number  timer       [string "BEFORE"/"AFTER"]
+     */
+    var userLeftJoinList = function userLeftJoinList(user, type, timer, appendPosition){
+        var liTemplate, liEl, tim,
+            userName = user || this.options.currentUser, userClass = getUserClass.call(this, user);
+
+        if (type === "LEFT") {
+            liEl = this.container.find(".ch-user-list-wrap .ch-user-avl-" + userClass)
+            liEl.addClass("prep-rm");
+
+            tim = setTimeout(function(){
+
+                liEl.animate({
+                    "margin-left":"10000px"
+                }, timer, function(){
+                    liEl.remove();
+                    clearTimeout(tim);
+                }.bind(this));
+
+            }.bind(this), timer + 100);
+
+        } else {
+            liTemplate = compileTemplate.call(
+                    this,
+                    "userliTemplate", {
+                        "usr": user
+                    }
+                );
+
+            if (appendPosition === "BEFORE"){
+                liEl = this.container
+                         .find(".ch-user-list")
+                         .prepend(liTemplate)
+                         .find(".ch-user-avl-" + userClass);
+            } else {
+                liEl = this.container
+                         .find(".ch-user-list")
+                         .append(liTemplate)
+                         .find(".ch-user-avl-" + userClass);
+            }
+            liEl.addClass("prep-add");
+
+            liEl.animate({
+                "margin-left":"-10px"
+            }, timer, function(){
+                $(this).removeClass("prep-add");
+            });
+
         }
 
     };
@@ -432,7 +503,7 @@
 
         this.socket.on("typing", function(data) {
             if (this.options.currentUser !== null) {
-                typeInfo.call(this, "is typing..", data.username, "show");
+                typeInfo.call(this, lang.userIsTyping, data.username, "show");
             }
         }.bind(this));
 
@@ -444,14 +515,26 @@
 
         this.socket.on("user.joined", function(data) {
             if (this.options.currentUser !== null) {
-                userLeftJoin.call(this, lang.notUserJoin, data.username, "JOIN", 0);
+                userLeftJoin.call(this, lang.notUserJoin, data.username, "JOIN");
+                userLeftJoinList.call(this, data.username, "JOIN", 1900, "BEFORE");
+            }
+        }.bind(this));
+
+        this.socket.on("user.list", function(data) {
+            if (this.options.currentUser !== null) {
+                var timer  = 1900;
+                $.map(data.users, function (user){
+                    userLeftJoinList.call(this, user, "JOIN", timer, "AFTER");
+                    timer  = timer + 100;
+                }.bind(this));
             }
         }.bind(this));
 
         this.socket.on("user.left", function(data) {
             if (this.options.currentUser !== null) {
                 typeInfo.call(this, "", data.username, "hide", 0);
-                userLeftJoin.call(this, lang.notUserLeft, data.username, "LEFT", 0);
+                userLeftJoin.call(this, lang.notUserLeft, data.username, "LEFT");
+                userLeftJoinList.call(this, data.username, "LEFT", 1200);
             }
         }.bind(this));
 
@@ -478,10 +561,25 @@
     var setDom = function setDom(){
         xDebug.call(this, arguments.callee.name, arguments);
 
+
         this.container
             .append(compileTemplate.call(
                 this,
+                "chatContainer", {}
+            ));
+
+        this.container
+            .find(".ch-cont-wrap")
+            .append(compileTemplate.call(
+                this,
                 "chatThreadContainer", {}
+            ));
+
+        this.container
+            .find(".ch-cont-wrap")
+            .append(compileTemplate.call(
+                this,
+                "userList", {}
             ));
 
         this.container
@@ -596,7 +694,9 @@
         btnLabel            : getMessage("AXCHAT.BUTTON.LABEL")          || "Invite link",
         linkDlgtitle        : getMessage("AXCHAT.DIALOG.TITLE")          || "Invite link",
         notUserJoin         : getMessage("AXCHAT.USER.JOIN")             || "has joined your channel...",
-        notUserLeft         : getMessage("AXCHAT.USER.LEFT")             || "has left your channel..."
+        notUserLeft         : getMessage("AXCHAT.USER.LEFT")             || "has left your channel...",
+        userIsTyping        : getMessage("AXCHAT.USER.ISTYPING")         || "is typing..", // TODO add to apex message
+        availableUsers      : getMessage("AXCHAT.USER.AVAUSERS")         || "Available users on chat" // TODO add to apex message
     }
 
 })(apex.jQuery, apex);

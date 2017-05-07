@@ -24,10 +24,12 @@
     var app       = express();
     var server    = http.createServer(app);
     var io        = socketio(server, { serveClient: false });
+    var users     = [];
 
 
     var wiLogger = new(winston.Logger)({
         transports: [
+            new(winston.transports.Console)(),
             new(winston.transports.File)({
                 name: 'info-file',
                 filename: 'logs/filelog-info.log',
@@ -63,14 +65,26 @@
       wiLogger.log("info","emit room name..." + socket.room);
 
 
-      var emit = function(emitCmd, data){
+      var emit = function(emitCmd, data, socketId){
         wiLogger.log("info","emitCmd : " + emitCmd);
         wiLogger.log("info","data : " + JSON.stringify(data));
         wiLogger.log("info","socket.room : " + socket.room);
-        if (socket.room !== undefined){
-            socket.in(socket.room).broadcast.emit(emitCmd, data);
+
+        if (socketId !== undefined){
+          wiLogger.log("info","socketId : " + socketId);
+          if (socket.room !== undefined){
+              //TEST
+              socket.in(socket.room).broadcast.to(socketId).emit(emitCmd, data);
+          } else {
+              io.to(socketId).emit(emitCmd, data);
+          }
         } else {
-            socket.broadcast.emit(emitCmd, data);
+
+          if (socket.room !== undefined){
+              socket.in(socket.room).broadcast.emit(emitCmd, data);
+          } else {
+              socket.broadcast.emit(emitCmd, data);
+          }
         }
       }
 
@@ -98,6 +112,12 @@
         if (data.username !== null || data.username !== undefined){
           wiLogger.log("info", "add user " + data.username);
           socket.username = data.username;
+
+          emit("user.list", {
+            users: users
+          }, socket.id);
+
+          users.push(data.username);
         }
 
         socket.join(data.room);
@@ -123,6 +143,12 @@
         if (data.username !== null && data.username !== undefined){
           wiLogger.log("info", "add user to public chat " + data.username);
           socket.username = data.username;
+
+          emit("user.list", {
+            users: users
+          }, socket.id);
+
+          users.push(data.username);
         }
 
         if (socket.username !== undefined){
@@ -140,6 +166,7 @@
 
         wiLogger.log("info", "add user " + data.username);
         socket.username = data.username;
+        users.push(data.username);
 
         emit("user.joined", {
           username: socket.username
@@ -168,9 +195,15 @@
 
       socket.on("disconnect", function () {
         if (socket.username !== undefined){
+          users = users.filter(function(i) {
+            return !(i === socket.username);
+          });
+
           emit("user.left", {
             username: socket.username
           });
+
+
         }
       });
     });
