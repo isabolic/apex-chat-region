@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node chat.js &"
   },
-  "port" : "5050",
-  "server" : "playground",
+  "port" : "SERVER_PORT",
+  "server" : "SERVER_HOST (OR IP)",
   "author": "isabolic (sabolic.ivan@gmail.com)",
   "license": "MIT",
   "dependencies": {
