@@ -207,6 +207,18 @@
             }
         );
 
+        if(document.hidden === true && this.options.currentUser !== userName){
+            Push.create(lang.newMessageFrom + userName, {
+                body: msg,
+                timeout: 4000,
+                onClick: function () {
+                    window.focus();
+                    this.close();
+                }
+            });
+        }
+
+
         rowtemplate = $(rowtemplate);
 
         this.container.find(".ch-thread-cont").append(rowtemplate);
@@ -285,15 +297,26 @@
      * @param  string  action      [string "LEFT"/"JOIN"]
      */
     var userLeftJoin = function userLeftJoin(msg, user, type){
-        var rowTemplate,
+        var rowTemplate, push
             userName = user || this.options.currentUser;
 
         if (this.options.showLeftNotefication === true && type === "LEFT") {
             rowTemplate = "userLeftNot";
-        }
-        if (this.options.showJoinNotefication === true && type === "JOIN") {
+        } else if (this.options.showJoinNotefication === true && type === "JOIN") {
             rowTemplate = "userJoinNot";
         }
+
+        if (document.hidden === true){
+            Push.create(userName, {
+                body: type === "JOIN" ? lang.notUserJoin : lang.notUserLeft,
+                timeout: 4000,
+                onClick: function () {
+                    window.focus();
+                    this.close();
+                }
+            });
+        }
+
 
         if (rowTemplate !== undefined) {
 
@@ -677,6 +700,8 @@
                 this.parent.append(this.container);
             }
 
+            Push.Permission.request();
+
             setDom.call(this);
 
             return this;
@@ -695,8 +720,9 @@
         linkDlgtitle        : getMessage("AXCHAT.DIALOG.TITLE")          || "Invite link",
         notUserJoin         : getMessage("AXCHAT.USER.JOIN")             || "has joined your channel...",
         notUserLeft         : getMessage("AXCHAT.USER.LEFT")             || "has left your channel...",
-        userIsTyping        : getMessage("AXCHAT.USER.ISTYPING")         || "is typing..", // TODO add to apex message
-        availableUsers      : getMessage("AXCHAT.USER.AVAUSERS")         || "Available users on chat" // TODO add to apex message
+        userIsTyping        : getMessage("AXCHAT.USER.ISTYPING")         || "is typing..",
+        availableUsers      : getMessage("AXCHAT.USER.AVAUSERS")         || "Available users on chat",
+        newMessageFrom      : getMessage("AXCHAT.USER.NEWMSG.PROMPT")    || "You have a new message from ",
     }
 
 })(apex.jQuery, apex);
