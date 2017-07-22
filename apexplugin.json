@@ -24,7 +24,7 @@
       "versions" : ["5.0.2.00.07", "5.1.0.00.45"],
       "plugin" : {
         "internalName" : "APEX.SOCKET.CHAT.ROOM",
-        "type" : "REGION",
+        "type" : "region",
         "demo" : "https://apex.oracle.com/pls/apex/f?p=101959:16",
         "previewImage" : "https://raw.githubusercontent.com/isabolic/apex-chat-region/master/apex-chat-prw.gif"
       }
