@@ -26,7 +26,7 @@
         "internalName" : "APEX.SOCKET.CHAT.ROOM",
         "type" : "REGION",
         "demo" : "https://apex.oracle.com/pls/apex/f?p=101959:16",
-        "previewImage" : "https://raw.githubusercontent.com/isabolic/apex-plg-spinkit/master/apex-chat-prw.gif"
+        "previewImage" : "https://raw.githubusercontent.com/isabolic/apex-chat-region/master/apex-chat-prw.gif"
       }
     }
   }
