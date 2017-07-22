@@ -1,0 +1,33 @@
+{
+  "name" : "apex chat",
+  "version" : "1.0.0",
+  "description" : "Region plugin for chat",
+  "keywords" : ["chat", "websockets", "node", "apex", "oracle", "plugin"],
+  "homepage" : "https://github.com/isabolic/apex-chat-region",
+  "bugs" : {
+    "url" : "https://github.com/isabolic/apex-chat-region/issues",
+    "email" : "sabolic.ivan@gmail.com"
+  },
+  "license" : "MIT",
+  "author" : {
+    "name" : "Ivan Sabolić",
+    "email" : "sabolic.ivan@gmail.com",
+    "url"  : "https://github.com/isabolic"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/isabolic/apex-chat-region"
+  },
+ "oracle" : {
+    "versions" : ["11.2.0.1", "12.1.0.1"],
+    "apex" : {
+      "versions" : ["5.0.2.00.07", "5.1.0.00.45"],
+      "plugin" : {
+        "internalName" : "APEX.SOCKET.CHAT.ROOM",
+        "type" : "REGION",
+        "demo" : "https://apex.oracle.com/pls/apex/f?p=101959:16",
+        "previewImage" : "https://raw.githubusercontent.com/isabolic/apex-plg-spinkit/master/apex-chat-prw.gif"
+      }
+    }
+  }
+}
