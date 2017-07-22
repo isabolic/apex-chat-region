@@ -1,5 +1,5 @@
 {
-  "name" : "apex chat",
+  "name" : "APEX chat region",
   "version" : "1.0.0",
   "description" : "Region plugin for chat",
   "keywords" : ["chat", "websockets", "node", "apex", "oracle", "plugin"],
