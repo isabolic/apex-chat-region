@@ -21,7 +21,7 @@
  "oracle" : {
     "versions" : ["11.2.0.1", "12.1.0.1"],
     "apex" : {
-      "versions" : ["5.0.2.00.07", "5.1.0.00.45"],
+      "versions" : ["5.0.2.00.07", "5.1.0.00.45", "5.1.2.00.09"],
       "plugin" : {
         "internalName" : "APEX.SOCKET.CHAT.ROOM",
         "type" : "region",
