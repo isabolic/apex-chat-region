@@ -41,7 +41,7 @@
             chatRow              : "<div class='ch-row'>"                                                                                  +
                                                     "<div class='ch-avatar'>{{avatar}}</div>"                                                 +
                                                     "<div class='ch-username'>{{username}}</div>"                                             +
-                                                    "<div class='ch-msg {{current_usr}}'>{{msg}}</div>"                                       +
+                                                    "<div class='ch-msg {{current_usr}}'>{{{msg}}}</div>"                                       +
                                                 "</div>",
             typingInfo           : "<div class='ch-ty-row ty-{{usr}}'>"                                                                    +
                                                     "<div class='ch-type'>{{msg}}</div>"                                                      +
@@ -198,6 +198,9 @@
         var userName = user || this.options.currentUser,
             rowtemplate;
 
+        msg = new showdown.Converter().makeHtml(msg);
+
+
         rowtemplate = compileTemplate.call(this,
             "chatRow", {
                 "msg"        : msg,
@@ -207,7 +210,7 @@
             }
         );
 
-        if(document.hidden === true && this.options.currentUser !== userName){
+        if(document.hidden === true && this.options.currentUser !== userName && window.Push){
             Push.create(lang.newMessageFrom + userName, {
                 body: msg,
                 timeout: 4000,
@@ -297,7 +300,7 @@
      * @param  string  action      [string "LEFT"/"JOIN"]
      */
     var userLeftJoin = function userLeftJoin(msg, user, type){
-        var rowTemplate, push
+        var rowTemplate,
             userName = user || this.options.currentUser;
 
         if (this.options.showLeftNotefication === true && type === "LEFT") {
@@ -306,7 +309,7 @@
             rowTemplate = "userJoinNot";
         }
 
-        if (document.hidden === true){
+        if (document.hidden === true && window.Push){
             Push.create(userName, {
                 body: type === "JOIN" ? lang.notUserJoin : lang.notUserLeft,
                 timeout: 4000,
@@ -405,7 +408,7 @@
 
         this.container.on("keydown", ".ch-input", function(e) {
             var msg;
-            if (e.keyCode === 13) {
+            if (e.keyCode === 13 && e.shiftKey === false) {
                 msg = $(e.currentTarget).val();
                 $(e.currentTarget).val("");
                 addMessageElement.call(this, msg);
@@ -661,7 +664,11 @@
         this.linkDialog = $(dlgTemplate);
 
         $("body").append(dlgTemplate);
+    }
 
+    var setShowdownOpts = function setShowdownOpts(){
+        showdown.setOption("emoji", true);
+        showdown.setOption("simpleLineBreaks", true);
     }
 
     apex.plugins.apexChat = function(opts) {
@@ -679,6 +686,10 @@
 
             if (window.Handlebars === undefined) {
                 throw this.jsName || ": requires handlebars.js (http://handlebarsjs.com/)";
+            }
+
+            if (window.showdown === undefined) {
+                throw this.jsName || ": requires showdown.js (https://github.com/showdownjs/showdown)";
             }
 
             if ($.type(opts) === "string") {
@@ -700,9 +711,12 @@
                 this.parent.append(this.container);
             }
 
-            Push.Permission.request();
+            if (window.Push) {
+                Push.Permission.request();
+            }
 
             setDom.call(this);
+            setShowdownOpts.call(this);
 
             return this;
 

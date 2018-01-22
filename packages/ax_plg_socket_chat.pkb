@@ -99,6 +99,10 @@
                                        p_version        => NULL,
                                        p_skip_extension => FALSE);
 
+          apex_javascript.add_library(p_name           => 'showdown.min',
+                                       p_directory      => p_plugin.file_prefix,
+                                       p_version        => NULL,
+                                       p_skip_extension => FALSE);
            apex_css.add_file (
                     p_name      => 'apex.chat',
                     p_directory => p_plugin.file_prefix );

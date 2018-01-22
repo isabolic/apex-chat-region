@@ -279,3 +279,8 @@ body.t-PageBody.js-rightCollapsed .t-Body-actions {
     width: 20px;
   }
 }
+
+pre {
+    background-color: #f8f8f8;
+    border: 1px solid #dfdfdf;
+}
