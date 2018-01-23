@@ -28,10 +28,12 @@ from **build** directory:
    ```
 5) then edit file config.json, there you set node.js port and server ip address or hostname
    ```javascript
-    ...
-    "port" : "SERVER_PORT",
-    "server" : "SERVER_HOST (OR IP)",
-    ...
+    {
+      "options": {
+        "port": "PORT",
+        "server": "IP_ADD_OR_HOST"
+      }
+    }
    ```
 6) inside terminal navigate into copied node.server directory and run
    ```bash
