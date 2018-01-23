@@ -15,10 +15,10 @@
     const winston = require('winston');
     const mkdirp = require('mkdirp');
     const ip = require("ip");
-    const pjson = require('./package.json');
+    const pjson = require('./config.json');
 
-    const server_port = pjson.port;
-    const server_ip_address = pjson.server || ip.address();
+    const server_port = pjson.options.port;
+    const server_ip_address = pjson.options.server || ip.address();
 
 
     let app = express();

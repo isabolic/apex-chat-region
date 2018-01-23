@@ -21,7 +21,12 @@ from **build** directory:
    ```bash
    npm install
    ```
-5) go into node.server and edit file package.json, there you set node.js port and server ip address or hostname
+5) inside node.server, copy or rename file config.json.org
+   ```bash
+   cd node.server
+   cp config.json.org config.json
+   ```
+5) then edit file config.json, there you set node.js port and server ip address or hostname
    ```javascript
     ...
     "port" : "SERVER_PORT",

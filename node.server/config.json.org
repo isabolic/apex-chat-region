@@ -1,0 +1,6 @@
+{
+    "options": {
+        "port": "PORT",
+        "server": "IP_ADD_OR_HOST"
+    }
+}
