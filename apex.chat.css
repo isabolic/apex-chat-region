@@ -280,7 +280,11 @@ body.t-PageBody.js-rightCollapsed .t-Body-actions {
   }
 }
 
-pre {
-    background-color: #f8f8f8;
-    border: 1px solid #dfdfdf;
+.apx-chat-reg pre {
+  background-color: #f8f8f8;
+  border: 1px solid #dfdfdf;
+  margin: 0px;
+}
+.apx-chat-reg p {
+  margin: 0px;
 }
